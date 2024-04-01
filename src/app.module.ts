@@ -13,7 +13,7 @@ import { SharedModule } from './shared/shared.module';
     // 配置模块
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.development','.env'],
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
     // 业务模块
     AuthModule,
@@ -26,5 +26,5 @@ import { SharedModule } from './shared/shared.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
 
