@@ -71,3 +71,86 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+### 报错
+在公共模块SharedModule的imports[]数组中使用TypeOrmModule.forRootAsync连接数据库时，在后续业务模块controller的方法中，出现拿不到@Req和@Res对象，打印为空的错误
+
+```ts
+/**
+ * 公共模块
+ */
+@Module({
+    imports: [
+        TypeOrmModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => {
+                return {
+                    type: 'mysql',
+                    autoLoadEntities: true,
+                    host: configService.get('DB_HOST'),
+                    port: configService.get('DB_PORT'),
+                    username: configService.get('DB_USERNAME'),
+                    password: configService.get('DB_PASSWORD'),
+                    database: configService.get('DB_DATABASE'),
+                    synchronize: process.env.NODE_ENV === 'development',
+                    timezone: '+08:00',
+                    logging: true,
+                    entities: [__dirname + '/../**/*.entity{.ts,.js}']
+                }
+            }
+        }),
+    ],
+    providers: [
+        SharedService,
+        RedisService,
+        {
+            // 连接redis客户端
+            inject: [ConfigService],
+            provide: "REDIS_CLIENT",
+            async useFactory(configService: ConfigService) {
+                const redisClient = createClient({
+                    url: configService.get<string>("REDIS_URL")
+                });
+                redisClient.on("connect", () => console.log("Redis Client Connected"));
+                redisClient.on("error", (err) => console.log("Redis Client Error", err));
+                await redisClient.connect();
+                return redisClient;
+            }
+        },
+    ],
+    exports: [SharedService, RedisService],
+})
+export class SharedModule { }
+```
+
+```ts
+// 业务模块controller
+import { Body, Controller, Get, Header, Post, Req, Res } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import * as svgCaptcha from 'svg-captcha';
+import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
+import type { Response } from 'express';
+
+@Controller()
+export class AuthController {
+  constructor(private readonly authService: AuthService) { }
+
+  @Get('captcha')
+  async createCaptcha(@Req() req: any, @Res() res: Response) {
+    const captcha = svgCaptcha.create({
+      size: 4,
+      fontSize: 40,
+      width: 80,
+      height: 40,
+      background: '#fff',
+      color: true,
+    });
+    console.log('-----', res, req) // ------ undefined undefined
+    req.session.code = captcha.text || '';
+    res.type('image/svg+xml');
+    res.send(captcha.data);
+  }
+
+}
+```

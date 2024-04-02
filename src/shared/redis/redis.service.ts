@@ -19,7 +19,7 @@ export class RedisService {
      * 根据键名存储对应的值
      * @param key 存储对应的键名
      * @param value 存储的值
-     * @param ttl 过期时间（Time To Live），可选
+     * @param ttl 过期时间（Time To Live），可选（单位为秒）
      */
     async set(key: string, value: string | number, ttl?: number) {
         await this.redisClient.set(key, value);
