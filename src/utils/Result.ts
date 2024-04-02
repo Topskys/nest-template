@@ -3,12 +3,12 @@ import { HttpStatus } from "@nestjs/common";
 export class Result<T>{
 
     private code: number;
-    private msg: string;
+    private message: string;
     private data: T;
 
-    public constructor(code?: number, msg?: string, data?: T) {
+    public constructor(code?: number, message?: string, data?: T) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
@@ -22,7 +22,7 @@ export class Result<T>{
      * @returns {Result<T>} 返回封装了状态码、数据及消息的Result对象，状态码默认设置为HttpStatus.OK
      */
     static ok<T>(data?: T, message: string = '请求成功'): Result<T> {
-        return new Result<T>().setCode(HttpStatus.OK).setData(data).setMsg(message);
+        return new Result<T>().setCode(HttpStatus.OK).setData(data).setMessage(message);
     }
 
 
@@ -35,7 +35,7 @@ export class Result<T>{
      * @returns {Result<T>} 返回封装了状态码、可能存在的数据及错误消息的Result对象
      */
     static error<T>(message: string = '请求失败', code: number = HttpStatus.BAD_REQUEST): Result<T> {
-        return new Result<T>().setCode(code).setMsg(message);
+        return new Result<T>().setCode(code).setMessage(message);
     }
 
     /**
@@ -51,8 +51,8 @@ export class Result<T>{
      * 设置消息
      * @param message
      */
-    setMsg(message: string): Result<T> {
-        this.msg = message;
+    setMessage(message: string): Result<T> {
+        this.message = message;
         return this;
     }
 

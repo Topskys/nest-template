@@ -1,18 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PageUserDto } from './dto/user.dto';
 import { PageVo } from '@/vo/page.vo';
-import { User } from './entities/user.entity';
+import { Result } from '@/utils/Result';
+import { ADD_SUCCESS, QUERY_SUCCESS } from '@/constants';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
+  /**
+   * 添加用户
+   * @param createUserDto 
+   */
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.userService.create(createUserDto);
+    return Result.ok(user, ADD_SUCCESS);
   }
 
   /**
@@ -21,10 +27,10 @@ export class UserController {
    * @returns PageVo<User>
    */
   @Get()
-  async findAll(@Query() query: PageUserDto): Promise<PageVo<User>> {
+  async findAll(@Query() query: PageUserDto) {
     const { page, pageSize } = query;
     const [users, total] = await this.userService.findByPage(query)
-    return new PageVo(users, total, page, pageSize);
+    return Result.ok(new PageVo(users, total, page, pageSize), QUERY_SUCCESS);
   }
 
   @Get(':id')

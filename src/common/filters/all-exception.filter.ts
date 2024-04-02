@@ -1,5 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
-
+/**
+ * 全局异常过滤器
+ */
 @Catch()
 export class AllExceptionFilter<T> implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {

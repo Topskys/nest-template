@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
 import { RedisService } from '@/shared/redis/redis.service';
 import { ACCESS_TOKEN_EXPIRES_IN, ACCESS_TOKEN_KEY } from '@/constants/redis.constant';
+import { LoginDto } from './login.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,17 +21,17 @@ export class AuthService {
     async validateUser(username: string, password: string) {
         const user = await this.userService.findByUsername(username);
         if (user && compareSync(password, user.password)) {
-          const { password, ...result } = user;
-          return result;
+            const { password, ...result } = user;
+            return result;
         }
         return null;
-      }
+    }
 
     getAccessTokenKey(payload: any) {
         return `${ACCESS_TOKEN_KEY}:${payload.userId}`
     }
 
-    async login(user: any, res: any, captcha?: string) {
+    async login(user: any, loginDto: LoginDto) {
         // 判断用户角色enable属性是否有为true
         // 判断用户的各种状态
         if (!user.roles?.some(r => r.enable)) {
@@ -41,9 +42,28 @@ export class AuthService {
         return this.generateToken(payload);
     }
 
+    /**
+     * 生成令牌
+     */
     generateToken(payload: any) {
         const accessToken = this.jwtService.sign(payload);
         this.redisService.set(this.getAccessTokenKey(payload), accessToken, ACCESS_TOKEN_EXPIRES_IN)
         return accessToken;
     }
+
+
+    /**
+     * 退出登录
+     * @param user 
+     * @returns 
+     */
+    async logout(user: any) {
+        // 删除当前用户相关信息
+        if (user.userId) {
+            await this.redisService.del(this.getAccessTokenKey(user));
+            return true;
+        }
+        return false;
+    }
+
 }

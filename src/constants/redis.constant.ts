@@ -17,6 +17,6 @@ export const ACCESS_TOKEN_EXPIRES_IN = 1 * 24 * 60 * 60
 /**
  * 刷新令牌有效时间
  */
-export const REFRESH_TOKEN_EXPIRES_IN = ACCESS_TOKEN_EXPIRES_IN * 7
+export const REFRESH_TOKEN_EXPIRES_IN = 7 * ACCESS_TOKEN_EXPIRES_IN
 
 
