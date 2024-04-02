@@ -1,19 +1,28 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Header, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import * as svgCaptcha from 'svg-captcha';
 import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
+import type { Response } from 'express';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  // @Post('login')
-  // async login(@Req() req: any, @Body() body: any) {
-  //   // 判断验证码是否正确
-  //   if (req.session?.code?.toLowerCase() !== body.captcha?.toLowerCase()) {
-  //     throw new CustomException(ErrorCode.ERR_10003);
-  //   }
-  //   // 其余登录逻辑
-  //   return this.authService.login();
-  // }
+  @Get('captcha')
+  async createCaptcha(@Req() req: any, @Res() res: Response) {
+    const captcha = svgCaptcha.create({
+      size: 4,
+      fontSize: 40,
+      width: 80,
+      height: 40,
+      background: '#fff',
+      color: true,
+    });
+    console.log('------------------------', res, req)
+    req.session.code = captcha.text || '';
+    res.type('image/svg+xml');
+    res.send(captcha.data);
+  }
+
 
 }

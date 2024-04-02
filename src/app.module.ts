@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { SharedModule } from './shared/shared.module';
+import { RecordModule } from './modules/record/record.module';
 
 @Module({
   imports: [
@@ -21,7 +22,9 @@ import { SharedModule } from './shared/shared.module';
     RoleModule,
     PermissionModule,
 
+    // 公共模块
     SharedModule,
+    RecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],

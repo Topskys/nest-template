@@ -26,7 +26,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                     synchronize: process.env.NODE_ENV === 'development',
                     timezone: '+08:00',
                     logging: true,
-                    // entities: [__dirname + '/../**/*.entity{.ts,.js}']
+                    entities: [__dirname + '/../**/*.entity{.ts,.js}']
                 }
             }
         }),
