@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { User } from "./user.entity";
 import { Base } from "@/modules/base.entity";
 
@@ -33,5 +33,6 @@ export class Profile extends Base {
         createForeignKeyConstraints: false,
         onDelete: 'CASCADE',
     })
+    @JoinColumn() // 关联列
     user: User;
 }

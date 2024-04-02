@@ -17,7 +17,7 @@ export class AuthController {
       throw new CustomException(ErrorCode.ERR_10003);
     }
     // 登录
-    // return this.authService.login(req.user, res,req.session?.captcha);
+    return this.authService.login(req.user, res,req.session?.captcha);
   }
 
   /**

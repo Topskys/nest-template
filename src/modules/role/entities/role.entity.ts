@@ -1,7 +1,7 @@
 import { Base } from "@/modules/base.entity";
 import { Permission } from "@/modules/permission/entities/permission.entity";
 import { User } from "@/modules/user/entities/user.entity";
-import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany } from "typeorm";
 
 @Entity({ comment: '角色表' })
 export class Role extends Base {
@@ -17,17 +17,6 @@ export class Role extends Base {
 
     @ManyToMany(() => User, (user) => user.roles, {
         createForeignKeyConstraints: false,
-    })
-    @JoinTable({
-        name: 'user_role',
-        joinColumn: {
-            name: 'role_id',
-            referencedColumnName: 'id'
-        },
-        inverseJoinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'id'
-        }
     })
     users: User[];
 

@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { Profile } from "./profile.entity";
 import { Role } from "@/modules/role/entities/role.entity";
 import { Base } from "@/modules/base.entity";
@@ -21,6 +21,19 @@ export class User extends Base {
     })
     profile: Profile;
 
-    @OneToMany(type => Role, role => role.users, { createForeignKeyConstraints: false })
+    @ManyToMany(() => Role, role => role.users, {
+        createForeignKeyConstraints: false
+    })
+    @JoinTable({
+        name: 'user_role',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'role_id',
+            referencedColumnName: 'id'
+        }
+    })
     roles: Role[];
 }
