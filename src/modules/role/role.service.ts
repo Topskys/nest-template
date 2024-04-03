@@ -112,4 +112,33 @@ export class RoleService {
     findById(id: string) {
         return this.roleRep.findOne({ where: { id } })
     }
+
+    /**
+     *  查询按钮权限
+     */
+    async findButtonPermissionsByRoleIds(roleIds: string[]) {
+        // 查询角色对应菜单
+        const roles = await this.roleRep.find({
+            select: ['id', 'permissions'],
+            where: { id: In(roleIds) },
+            relations: ['permissions']
+        });
+        // 映射出菜单编号id
+        const permissionIds = roles.map(r => r.permissions).flat().map(p => p.id);
+        // 查询菜单按钮
+        const permissions = await this.permissionRep.find({
+            select: ["id", "code"],
+            where: {
+                type: "BUTTON",
+                enable: true,
+                isDeleted: false,
+                id: In(permissionIds)
+            },
+            order: {
+                order: 'ASC'
+            }
+        });
+        // 映射出菜单编码（标识）
+        return permissions.map(v => v.code);
+    }
 }

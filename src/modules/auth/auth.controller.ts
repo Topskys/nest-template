@@ -19,9 +19,9 @@ export class AuthController {
   async login(@Req() req: any, @Res() res: Response, @Body() loginDto: LoginDto) {
     const { captcha } = loginDto;
     // 效验验证码
-    if (req.session.captcha.toLowerCase() !== captcha.toLowerCase()) {
-      throw new CustomException(ErrorCode.ERR_10003);
-    }
+    // if (req.session.captcha.toLowerCase() !== captcha.toLowerCase()) {
+    //   throw new CustomException(ErrorCode.ERR_10003);
+    // }
     // 执行登录
     const { accessToken, refreshToken } = await this.authService.login(req.user);
     // 设置cookie
@@ -72,11 +72,11 @@ export class AuthController {
   /**
    * 获取当前登录用户的个人信息
    */
+  @UseGuards(JwtGuard)
   @Get('profile')
   async getUserInfo(@Req() req: any) {
-    const userInfo = req.user
-    if (userInfo) return Result.ok(userInfo);
-    return Result.error("获取用户信息失败");
+    const { user: userInfo } = req;
+    return Result.ok(userInfo);
   }
 
 }

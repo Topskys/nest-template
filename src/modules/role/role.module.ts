@@ -11,5 +11,6 @@ import { Permission } from '../permission/entities/permission.entity';
   ],
   controllers: [RoleController],
   providers: [RoleService],
+  exports: [RoleService], // 导出服务，否则jwt.strategy会报错
 })
 export class RoleModule { }

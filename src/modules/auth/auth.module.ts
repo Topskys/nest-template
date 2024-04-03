@@ -10,6 +10,7 @@ import { LocalStrategy } from './local.strategy';
 import { SharedModule } from '@/shared/shared.module';
 import { Permission } from '../permission/entities/permission.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         };
       },
     }),
-    UserModule,
+    UserModule, 
+    RoleModule, //  在此引入角色模块，否则jwt.strategy会报错
     ConfigModule,
     SharedModule, // 引入共享模块
     TypeOrmModule.forFeature([Permission]),

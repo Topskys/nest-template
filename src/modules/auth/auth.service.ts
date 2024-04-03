@@ -94,8 +94,8 @@ export class AuthService {
                 order: 'ASC'
             }
         })
-        console.log('-------menuList----',menuList);
-        return this.sharedService.generateRouter(menuList,'');
+        // 构建菜单树
+        return this.sharedService.generateRouter(menuList, '');
     }
 
     async refreshToken(user: any) {
