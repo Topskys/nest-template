@@ -7,6 +7,7 @@ export const ERR = {
   ERR_10002: { code: 10002, message: '用户名或密码错误' },
   ERR_10003: { code: 10003, message: '验证码错误' },
   ERR_10004: { code: 10004, message: '密码验证失败' },
+  ERR_10005: { code: 10005, message: '该账号已被禁用' },
   // token相关
   ERR_11001: { code: 11001, message: '登录无效或无权限访问' },
   ERR_11002: { code: 11002, message: '登录已过期' },

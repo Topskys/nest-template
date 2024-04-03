@@ -8,9 +8,6 @@ export class Profile extends Base {
     @Column({ unique: true, comment: '用户编号' })
     userId: string;
 
-    @Column({ unique: true, length: 50, comment: '用户名' })
-    username: string;
-
     @Column({ nullable: true, comment: '手机号' })
     phone: string;
 

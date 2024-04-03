@@ -39,5 +39,5 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsArray()
-    roleIds?: number[];
+    roleIds?: string[];
 }

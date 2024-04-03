@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { RedisService } from '@/shared/redis/redis.service';
-import { UserService } from '../user/user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,6 +8,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../user/user.module';
 import { LocalStrategy } from './local.strategy';
 import { SharedModule } from '@/shared/shared.module';
+import { Permission } from '../permission/entities/permission.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -26,6 +26,7 @@ import { SharedModule } from '@/shared/shared.module';
     UserModule,
     ConfigModule,
     SharedModule, // 引入共享模块
+    TypeOrmModule.forFeature([Permission]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],

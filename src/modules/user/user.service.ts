@@ -44,6 +44,7 @@ export class UserService {
     }
     // 密码加密
     newUser.password = hashSync(newUser.password);
+    console.log("---------------", createUserDto, newUser)
     // 更新保存用户信息
     return await this.userRep.save(newUser);
   }

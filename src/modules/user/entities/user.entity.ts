@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToOne } from "typeorm";
 import { Profile } from "./profile.entity";
 import { Role } from "@/modules/role/entities/role.entity";
 import { Base } from "@/modules/base.entity";

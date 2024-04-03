@@ -1,7 +1,8 @@
 import { Exclude } from "class-transformer";
 import { IsArray, IsBoolean, IsNotEmpty, IsOptional } from "class-validator";
+import { PageDto } from "../page.dto";
 
-export class createRoleDto {
+export class CreateRoleDto {
     @IsNotEmpty({ message: '角色编码不能为空' })
     code: string;
 
@@ -10,15 +11,27 @@ export class createRoleDto {
 
     @IsOptional()
     @IsArray()
-    permissionIds: number[];
+    permissionIds: string[];
 
     @IsBoolean()
     @IsOptional()
     enable?: boolean;
 }
 
-export class updtaeRoleDto extends createRoleDto {
+export class UpdateRoleDto extends CreateRoleDto {
 
     @Exclude()
     code: string;
+}
+
+export class PageRoleDto extends PageDto {
+    @IsOptional()
+    name: string;
+
+    @IsOptional()
+    code: string;
+
+    @IsBoolean()
+    @IsOptional()
+    enable: boolean;
 }

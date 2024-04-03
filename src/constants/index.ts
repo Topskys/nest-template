@@ -8,3 +8,5 @@ export const DELETE_SUCCESS = '删除成功';
 export const QUERY_SUCCESS = '查询成功';
 
 export const LOGOUT_SUCCESS = '退出成功';
+
+export const LOGIN_SUCCESS = '登录成功';
