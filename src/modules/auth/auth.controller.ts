@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import * as svgCaptcha from 'svg-captcha';
-import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
 import type { Response } from 'express';
 import { LoginDto } from './login.dto';
 import { JwtGuard } from '@/common/guards/jwt.guard';
 import { Result } from '@/utils/Result';
 import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from '@/constants';
-import { UpdatePasswordDto } from '../user/dto/user.dto';
 import { LocalGuard } from '@/common/guards/local.guard';
+import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from '@/constants/redis.constant';
+import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
 
 @Controller()
 export class AuthController {
@@ -16,15 +16,19 @@ export class AuthController {
 
   @UseGuards(LocalGuard) // 会将当前请求的user对象挂载到request上
   @Post('login')
-  async login(@Req() req: any, @Body() loginDto: LoginDto) {
+  async login(@Req() req: any, @Res() res: Response, @Body() loginDto: LoginDto) {
     const { captcha } = loginDto;
     // 效验验证码
-    // if (req.session.captcha.toLowerCase() !== captcha.toLowerCase()) {
-    //   throw new CustomException(ErrorCode.ERR_10003);
-    // }
+    if (req.session.captcha.toLowerCase() !== captcha.toLowerCase()) {
+      throw new CustomException(ErrorCode.ERR_10003);
+    }
     // 执行登录
     const { accessToken, refreshToken } = await this.authService.login(req.user);
-    return Result.ok({ accessToken, refreshToken }, LOGIN_SUCCESS);
+    // 设置cookie
+    res.cookie('Authorization', accessToken, { maxAge: ACCESS_TOKEN_EXPIRES_IN * 1000, signed: true, httpOnly: true });
+    res.cookie('RefreshToken', refreshToken, { maxAge: REFRESH_TOKEN_EXPIRES_IN * 1000, signed: true, httpOnly: true });
+    // 返回结果
+    res.send(Result.ok({ accessToken, refreshToken }, LOGIN_SUCCESS));
   }
 
   /**
@@ -62,7 +66,6 @@ export class AuthController {
   @Get("route")
   async getRouteTree() {
     const routerTree = await this.authService.findMenu();
-    console.log('-------menu----',routerTree);
     return Result.ok(routerTree);
   }
 
