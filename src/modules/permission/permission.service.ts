@@ -6,10 +6,9 @@ import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class PermissionService {
-
   constructor(
     @InjectRepository(Permission) private permissionRep: Repository<Permission>,
-  ) { }
+  ) {}
 
   create(createPermissionDto: CreatePermissionDto) {
     const permission = this.permissionRep.create(createPermissionDto);
@@ -52,7 +51,10 @@ export class PermissionService {
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {
     const permission = await this.findOne(id);
     if (!permission) throw new BadRequestException('权限不存或者已删除');
-    const newPermission = this.permissionRep.merge(permission, updatePermissionDto);
+    const newPermission = this.permissionRep.merge(
+      permission,
+      updatePermissionDto,
+    );
     await this.permissionRep.save(newPermission);
     return true;
   }
@@ -69,5 +71,4 @@ export class PermissionService {
     await this.permissionRep.remove(permission);
     return true;
   }
-
 }

@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Result } from '@/utils/Result';
 import { ADD_SUCCESS, EDIT_SUCCESS, QUERY_SUCCESS } from '@/constants';
@@ -10,7 +20,7 @@ import { RoleGuard } from '@/common/guards/role.guard';
 @Controller('role')
 // @UseGuards(JwtGuard,RoleGuard)
 export class RoleController {
-  constructor(private readonly roleService: RoleService) { }
+  constructor(private readonly roleService: RoleService) {}
 
   @Post('create')
   async create(@Body() createRoleDto: CreateRoleDto) {
@@ -22,7 +32,10 @@ export class RoleController {
   async findAll(@Query() query: PageRoleDto) {
     const { page, pageSize } = query;
     const { total, pageData } = await this.roleService.findByPage(query);
-    return Result.ok(new PageVo(pageData, total, page, pageSize), QUERY_SUCCESS);
+    return Result.ok(
+      new PageVo(pageData, total, page, pageSize),
+      QUERY_SUCCESS,
+    );
   }
 
   @Get('options')
@@ -31,16 +44,15 @@ export class RoleController {
     return Result.ok(res, QUERY_SUCCESS);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   async update(@Param('id') id: string, @Body() updateRoleDto: CreateRoleDto) {
-    const isSeccuss = await this.roleService.update(id, updateRoleDto)
+    const isSeccuss = await this.roleService.update(id, updateRoleDto);
     if (isSeccuss) return Result.ok(undefined, EDIT_SUCCESS);
     return Result.error();
   }
 
-  @Delete(":id")
+  @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.roleService.remove(id);
   }
-
 }

@@ -24,7 +24,7 @@ import { RoleModule } from '../role/role.module';
         };
       },
     }),
-    UserModule, 
+    UserModule,
     RoleModule, //  在此引入角色模块，否则jwt.strategy会报错
     ConfigModule,
     SharedModule, // 引入共享模块
@@ -33,4 +33,4 @@ import { RoleModule } from '../role/role.module';
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

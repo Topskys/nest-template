@@ -14,4 +14,4 @@ import { Role } from '../role/entities/role.entity';
   providers: [UserService],
   exports: [UserService], // 导出服务，让其他模块使用
 })
-export class UserModule { }
+export class UserModule {}

@@ -21,13 +21,13 @@ import { RecordModule } from './modules/record/record.module';
     UserModule,
     RoleModule,
     PermissionModule,
+    // 日志模块
+    RecordModule,
 
     // 公共模块
     SharedModule,
-    RecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
-
+export class AppModule {}

@@ -5,18 +5,20 @@ import { CustomException, ErrorCode } from '../exceptions/custom.exception';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
 
-  constructor(private reflector: Reflector) { }
-
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    const currentUserRoles = []
+    const currentUserRoles = [];
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (!currentUserRoles?.length) throw new CustomException(ErrorCode.ERR_11003);
+    if (!currentUserRoles?.length)
+      throw new CustomException(ErrorCode.ERR_11003);
     if (!roles?.length) return true;
-    if (!roles.some(role => currentUserRoles.includes(role))) throw new CustomException(ErrorCode.ERR_11003);
+    if (!roles.some((role) => currentUserRoles.includes(role)))
+      throw new CustomException(ErrorCode.ERR_11003);
     return true;
   }
-
 }

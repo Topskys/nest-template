@@ -5,23 +5,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindManyOptions, In, Like, Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { CustomException, ErrorCode } from '@/common/exceptions/custom.exception';
+import {
+  CustomException,
+  ErrorCode,
+} from '@/common/exceptions/custom.exception';
 import { Role } from '../role/entities/role.entity';
 import { hashSync } from 'bcryptjs';
 import { PageUserDto, UpdateProfileDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
-
   constructor(
     @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Profile) private profileRep: Repository<Profile>,
     @InjectRepository(Role) private roleRep: Repository<Role>,
-  ) { }
+  ) {}
 
   /**
    * 添加用户
-   * @param createUserDto 
+   * @param createUserDto
    * @returns user
    */
   async create(createUserDto: CreateUserDto) {
@@ -77,11 +79,11 @@ export class UserService {
         },
       },
       order: {
-        createTime: 'ASC'
+        createTime: 'ASC',
       },
       take: pageSize,
       skip: (page - 1) * pageSize,
-    }
+    };
     return await this.userRep.findAndCount(options);
   }
 
@@ -95,16 +97,16 @@ export class UserService {
       where: { id },
       relations: {
         roles: true,
-        profile: true
-      }
-    })
+        profile: true,
+      },
+    });
   }
 
   /**
    * 修改用户（暂未使用）
-   * @param id 
-   * @param updateUserDto 
-   * @returns 
+   * @param id
+   * @param updateUserDto
+   * @returns
    */
   async update(id: string, updateUserDto: UpdateUserDto) {
     const findUser = await this.findUserProfile(id);
@@ -127,8 +129,11 @@ export class UserService {
     // 固有用户不能删除
     // if(id=='1') throw new CustomException(ErrorCode.ERR_11006,"不能删除根用户");
     await this.userRep.delete(id);
-    await this.profileRep.createQueryBuilder("profile")
-      .delete().where("profile.userId=:id", { id }).execute();
+    await this.profileRep
+      .createQueryBuilder('profile')
+      .delete()
+      .where('profile.userId=:id', { id })
+      .execute();
     // await this.roleRep.delete({ userId: id });
     return true;
   }
@@ -166,10 +171,10 @@ export class UserService {
   findByUsername(username: string) {
     return this.userRep.findOne({
       where: { username },
-      select: ["id", "username", "password", "enable"],
+      select: ['id', 'username', 'password', 'enable'],
       relations: {
         profile: true,
-        roles: true
+        roles: true,
       },
     });
   }
@@ -184,9 +189,8 @@ export class UserService {
       where: { id: userId },
       relations: {
         profile: true,
-        roles: true
-      }
-    })
+        roles: true,
+      },
+    });
   }
-
 }

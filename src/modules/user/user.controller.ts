@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,11 +18,11 @@ import { ADD_SUCCESS, QUERY_SUCCESS } from '@/constants';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   /**
    * 添加用户
-   * @param createUserDto 
+   * @param createUserDto
    */
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
@@ -30,7 +39,7 @@ export class UserController {
   @Get()
   async findAll(@Query() query: PageUserDto) {
     const { page, pageSize } = query;
-    const [users, total] = await this.userService.findByPage(query)
+    const [users, total] = await this.userService.findByPage(query);
     return Result.ok(new PageVo(users, total, page, pageSize), QUERY_SUCCESS);
   }
 
