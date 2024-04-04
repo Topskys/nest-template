@@ -27,16 +27,30 @@ export class PermissionService {
     return this.permissionRep.find();
   }
 
-  // async findMenu() {
-  //   return await this.permissionRep.find({
-  //     where: {
-  //       type: 'MENU',
-  //       order: {
-  //         order: 'ASC'
-  //       }
-  //     }
-  //   })
-  // }
+  /**
+   * 查询菜单路由
+   */
+  findMenuRoute() {
+    return this.permissionRep.find({
+      select: {
+        children: {
+          id: true,
+        },
+      },
+      where: {
+        type: 'MENU',
+        enable: true,
+        isDeleted: false,
+      },
+      order: {
+        order: 'ASC',
+      },
+      relations: {
+        children: true,
+        parent: true,
+      },
+    });
+  }
 
   findButtonByParentId(parentId: string) {
     return this.permissionRep.find({

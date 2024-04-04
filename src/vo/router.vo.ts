@@ -85,11 +85,14 @@ export class RouterVo {
    */
   children?: RouterVo[] = [];
 
+  parentId?: string;
+
   constructor(payload: Permission) {
     this.id = payload.id;
     this.name = payload?.name;
     this.path = payload?.path;
     this.redirect = payload?.redirect;
     this.component = payload?.component;
+    this.parentId = payload?.parentId;
   }
 }

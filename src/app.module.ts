@@ -8,6 +8,7 @@ import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { SharedModule } from './shared/shared.module';
 import { RecordModule } from './modules/record/record.module';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { RecordModule } from './modules/record/record.module';
 
     // 公共模块
     SharedModule,
+
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

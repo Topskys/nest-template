@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcryptjs';
 import { UserService } from '../user/user.service';
@@ -14,20 +13,13 @@ import {
   REFRESH_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_KEY,
 } from '@/constants/redis.constant';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Permission } from '../permission/entities/permission.entity';
-import { Repository } from 'typeorm';
-import { SharedService } from '@/shared/shared.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private configService: ConfigService,
     private jwtService: JwtService,
     private redisService: RedisService,
     private userService: UserService,
-    private readonly sharedService: SharedService,
-    @InjectRepository(Permission) private permissionRep: Repository<Permission>,
   ) {}
 
   async validateUser(username: string, password: string) {
@@ -91,24 +83,6 @@ export class AuthService {
       return true;
     }
     return false;
-  }
-
-  /**
-   * 查询菜单并构建菜单树
-   */
-  async findMenu() {
-    const menuList = await this.permissionRep.find({
-      where: {
-        type: 'MENU',
-        enable: true,
-        isDeleted: false,
-      },
-      order: {
-        order: 'ASC',
-      },
-    });
-    // 构建菜单树
-    return this.sharedService.generateRouter(menuList, '');
   }
 
   async refreshToken(user: any) {

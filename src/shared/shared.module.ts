@@ -5,8 +5,10 @@ import { TransformInterceptor } from '@/common/interceptors/transform.intercepto
 import { AllExceptionFilter } from '@/common/filters/all-exception.filter';
 import { ConfigService } from '@nestjs/config';
 import { createClient } from 'redis';
+import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtGuard } from '@/common/guards/jwt.guard';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 /**
  * 公共模块
@@ -30,6 +32,10 @@ import { JwtGuard } from '@/common/guards/jwt.guard';
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         };
       },
+    }),
+    ServeStaticModule.forRoot({
+      serveRoot: process.env.STATIC_PREFIX,
+      rootPath: join(process.cwd(), process.env.STATIC_PATH),
     }),
   ],
   providers: [
@@ -77,4 +83,4 @@ import { JwtGuard } from '@/common/guards/jwt.guard';
   ],
   exports: [SharedService, RedisService],
 })
-export class SharedModule {}
+export class SharedModule { }

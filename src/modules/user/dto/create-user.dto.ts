@@ -11,6 +11,7 @@ import {
 export class ProfileDto {
   @Allow()
   nickname: string;
+
   @Allow()
   gender: number;
 
@@ -25,6 +26,19 @@ export class ProfileDto {
 
   @Allow()
   email: string;
+
+  /**
+   * 初始化个人信息
+   * @param profile 个人信息对象
+   */
+  constructor(profile: ProfileDto) {
+    this.address = profile?.address;
+    this.avatar = profile?.avatar;
+    this.email = profile?.email;
+    this.gender = profile?.gender;
+    this.nickname = profile?.nickname;
+    this.phone = profile?.phone;
+  }
 }
 
 export class CreateUserDto {

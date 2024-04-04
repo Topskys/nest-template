@@ -59,7 +59,7 @@ export class Permission extends Base {
   @Column({ default: true, comment: '是否启用' })
   enable?: boolean;
 
-  @Column({ nullable: true, comment: '排序' })
+  @Column({ unique: true, nullable: true, comment: '排序' })
   order?: number;
 
   @Column({ name: 'parent_id', nullable: true, comment: '父级编号' })

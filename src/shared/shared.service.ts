@@ -1,55 +1,55 @@
-import { Permission } from '@/modules/permission/entities/permission.entity';
-import { Meta, RouterVo } from '@/vo/router.vo';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SharedService {
   /**
-   * 生成菜单路由
-   * @param menuList 菜单数组
-   * @param pid 父级菜单id
+   * 构造树型结构数据
+   * https://gitee.com/isme-admin/isme-nest-serve/blob/main/src/shared/shared.service.ts
    */
-  public generateRouter(menuList: Permission[], pid: string | null = null) {
-    const routerVoList = [];
-    menuList
-      .filter((m) => m && m.type == 'MENU')
-      .forEach((item) => {
-        if (item.parentId === pid || item.parentId == '') {
-          const routerVo = new RouterVo(item);
-          // 判断一级菜单路由
-          if (item?.parentId === null || !item?.parentId) {
-            routerVo.component = 'Layout';
-          }
-          // 设置meta信息
-          routerVo.meta = new Meta(item);
-          // 递归生成子路由
-          const children = this.generateRouter(menuList, item.id);
-          if (children?.length > 0) {
-            routerVo.children = children;
-          }
-          routerVoList.push(routerVo); // 修改这里，将路由项添加到 routerVoList 数组中
-        }
-      });
-    return routerVoList;
-  }
-
-  /**
-   * 生成菜单树
-   * @param menuList 菜单数组
-   * @param pid 父级菜单id
-   */
-  public static generateMenuTree(
-    list: Permission[],
-    pid: string | null = null,
+  public static handleTree(
+    data: any[],
+    id?: string,
+    parentId?: string,
+    children?: string,
   ) {
-    const tree: Permission[] = [];
-    for (const item of list) {
-      if (item.parentId == pid || 0) {
-        const children = this.generateMenuTree(list, item.id);
-        if (children.length > 0) {
-          item.children = children;
+    const config = {
+      id: id || 'id',
+      parentId: parentId || 'parentId',
+      childrenList: children || 'children',
+    };
+
+    const childrenListMap = {};
+    const nodeIds = {};
+    const tree = [];
+
+    for (const d of data) {
+      const parentId = d[config.parentId];
+      if (childrenListMap[parentId] == null) {
+        childrenListMap[parentId] = [];
+      }
+      nodeIds[d[config.id]] = d;
+      childrenListMap[parentId].push(d);
+    }
+
+    for (const d of data) {
+      const parentId = d[config.parentId];
+      if (nodeIds[parentId] == null) {
+        tree.push(d);
+      }
+    }
+
+    for (const t of tree) {
+      adaptToChildrenList(t);
+    }
+
+    function adaptToChildrenList(o) {
+      if (childrenListMap[o[config.id]] !== null) {
+        o[config.childrenList] = childrenListMap[o[config.id]];
+      }
+      if (o[config.childrenList]) {
+        for (const c of o[config.childrenList]) {
+          adaptToChildrenList(c);
         }
-        tree.push(item);
       }
     }
     return tree;

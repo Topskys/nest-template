@@ -1,11 +1,14 @@
+import { SharedService } from '@/shared/shared.service';
 import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
+  Param,
   Post,
   Req,
   Res,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -13,26 +16,27 @@ import * as svgCaptcha from 'svg-captcha';
 import type { Response } from 'express';
 import { LoginDto } from './login.dto';
 import { Result } from '@/utils/Result';
-import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from '@/constants';
-import { LocalGuard } from '@/common/guards/local.guard';
-import {
-  ACCESS_TOKEN_EXPIRES_IN,
-  CAPTCHA_EXPIRES_IN,
-  CAPTCHA_KEY,
-  REFRESH_TOKEN_EXPIRES_IN,
-} from '@/constants/redis.constant';
+import { EDIT_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS } from '@/constants';
+import { LocalGuard } from '@/common/guards';
+import { CAPTCHA_EXPIRES_IN, CAPTCHA_KEY } from '@/constants/redis.constant';
 import {
   CustomException,
   ErrorCode,
 } from '@/common/exceptions/custom.exception';
 import { Public } from '@/common/decorators/public.decorator';
 import { RedisService } from '@/shared/redis/redis.service';
+import { UpdatePasswordDto } from '../user/dto/user.dto';
+import { UserService } from '../user/user.service';
+import { PermissionService } from '../permission/permission.service';
+import { Meta, RouterVo } from '@/vo/router.vo';
 
 @Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly redisService: RedisService,
+    private readonly userService: UserService,
+    private readonly permissionService: PermissionService,
   ) {}
 
   getCaptchaKey(captchaText: string) {
@@ -94,8 +98,15 @@ export class AuthController {
    */
   @Get('route')
   async getRouteTree() {
-    const routerTree = await this.authService.findMenu();
-    return Result.ok(routerTree);
+    const menus = await this.permissionService.findMenuRoute();
+    if (!menus.length)
+      throw new HttpException('暂无菜单', HttpStatus.NOT_FOUND);
+    const routes = menus.map((item) => {
+      const routerVo = new RouterVo(item);
+      routerVo.meta = new Meta(item);
+      return routerVo;
+    });
+    return Result.ok(SharedService.handleTree(routes));
   }
 
   /**
@@ -105,5 +116,19 @@ export class AuthController {
   async getUserInfo(@Req() req: any) {
     const { user: userInfo } = req;
     return Result.ok(userInfo);
+  }
+
+  /**
+   * 重置当前账号的密码
+   * @param req 请求
+   * @param body 请求体
+   */
+  @Post('reset-password')
+  async changePassword(@Req() req: any, @Body() body: UpdatePasswordDto) {
+    const { id } = req.user;
+    const { password } = body;
+    await this.userService.resetPassword(id, password);
+    await this.authService.logout(req);
+    return Result.ok(undefined, EDIT_SUCCESS);
   }
 }

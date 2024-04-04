@@ -1,3 +1,4 @@
+import { ProfileDto } from './../user/dto/create-user.dto';
 import { RedisService } from '@/shared/redis/redis.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -51,7 +52,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // 延长令牌的有效期（也可以使用双token或通过过期时间刷新方案）
     // this.redisService.set(accessTokenKey, authorization, ACCESS_TOKEN_EXPIRES_IN);
-    const { phone, email, nickname, avatar, address, gender } = user.profile;
+    const profileDto = new ProfileDto(user.profile);
     // 查询角色对应按钮权限
     const roleIds = user.roles?.map((item) => item.id);
     const permissions = await this.roleService.findButtonPermissionsByRoleIds(
@@ -61,12 +62,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       id,
       username,
-      phone,
-      email,
-      nickname,
-      avatar,
-      address,
-      gender,
+      ...profileDto,
       roles: roleCodes,
       permissions,
     };
