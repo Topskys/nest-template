@@ -33,9 +33,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         };
       },
     }),
-    ServeStaticModule.forRoot({
-      serveRoot: process.env.STATIC_PREFIX,
-      rootPath: join(process.cwd(), process.env.STATIC_PATH),
+    ServeStaticModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => [
+        {
+          serveRoot: configService.get('STATIC_PREFIX'),
+          rootPath: join(process.cwd(), configService.get('STATIC_PATH')),
+        },
+      ],
     }),
   ],
   providers: [
@@ -83,4 +88,4 @@ import { ServeStaticModule } from '@nestjs/serve-static';
   ],
   exports: [SharedService, RedisService],
 })
-export class SharedModule { }
+export class SharedModule {}
