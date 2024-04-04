@@ -17,6 +17,8 @@ import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from '@/constants';
 import { LocalGuard } from '@/common/guards/local.guard';
 import {
   ACCESS_TOKEN_EXPIRES_IN,
+  CAPTCHA_EXPIRES_IN,
+  CAPTCHA_KEY,
   REFRESH_TOKEN_EXPIRES_IN,
 } from '@/constants/redis.constant';
 import {
@@ -24,52 +26,43 @@ import {
   ErrorCode,
 } from '@/common/exceptions/custom.exception';
 import { Public } from '@/common/decorators/public.decorator';
+import { RedisService } from '@/shared/redis/redis.service';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly redisService: RedisService,
+  ) {}
+
+  getCaptchaKey(captchaText: string) {
+    return `${CAPTCHA_KEY}:${captchaText}`;
+  }
 
   @Public()
   @UseGuards(LocalGuard) // 会将当前请求的user对象挂载到request上
   @Post('login')
-  async login(
-    @Req() req: any,
-    @Res() res: Response,
-    @Body() loginDto: LoginDto,
-  ) {
+  async login(@Req() req: any, @Body() loginDto: LoginDto) {
     const { captcha } = loginDto;
-    // 效验验证码
-    // if (req.session.captcha.toLowerCase() !== captcha.toLowerCase()) {
-    //   throw new CustomException(ErrorCode.ERR_10003);
-    // }
-    // 执行登录
-    const { accessToken, refreshToken } = await this.authService.login(
-      req.user,
+    // 判断验证码
+    const redisCaptcha = await this.redisService.get(
+      this.getCaptchaKey(captcha),
     );
-    // 设置cookie
-    res.cookie('Authorization', accessToken, {
-      maxAge: ACCESS_TOKEN_EXPIRES_IN * 1000,
-      signed: true,
-      httpOnly: true,
-    });
-    res.cookie('RefreshToken', refreshToken, {
-      maxAge: REFRESH_TOKEN_EXPIRES_IN * 1000,
-      signed: true,
-      httpOnly: true,
-    });
-    // 返回结果
-    res.send(Result.ok({ accessToken, refreshToken }, LOGIN_SUCCESS));
+    if (redisCaptcha !== captcha?.toLowerCase()) {
+      throw new CustomException(ErrorCode.ERR_10003);
+    }
+    // 执行登录
+    const tokens = await this.authService.login(req.user);
+    return Result.ok(tokens, LOGIN_SUCCESS);
   }
 
   /**
    * 生成图片验证码
-   * @param req 请求体
    * @param res 响应体
-   * @param session 会话
    */
   @Public()
   @Get('captcha')
-  async createCaptcha(@Res() res: Response, @Session() session) {
+  async createCaptcha(@Res() res: Response) {
     const captcha = svgCaptcha.create({
       size: 4,
       fontSize: 40,
@@ -78,7 +71,12 @@ export class AuthController {
       background: '#fff',
       color: true,
     });
-    session.captcha = captcha.text || '';
+    const captchaText = captcha.text?.toLowerCase();
+    await this.redisService.set(
+      this.getCaptchaKey(captchaText),
+      captchaText,
+      CAPTCHA_EXPIRES_IN,
+    );
     res.type('image/svg+xml');
     res.send(captcha.data);
   }

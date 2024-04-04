@@ -15,6 +15,17 @@ export const REFRESH_TOKEN_KEY = 'refresh_token';
 export const ACCESS_TOKEN_EXPIRES_IN = 1 * 24 * 60 * 60;
 
 /**
- * 刷新令牌有效时间
+ * 刷新令牌有效时间（秒）
  */
 export const REFRESH_TOKEN_EXPIRES_IN = 7 * ACCESS_TOKEN_EXPIRES_IN;
+
+/**
+ * 验证码键名
+ */
+export const CAPTCHA_KEY = 'captcha';
+
+/**
+ * 验证码Redis过期时间（秒）
+ * 五分钟过期
+ */
+export const CAPTCHA_EXPIRES_IN = 5 * 60;

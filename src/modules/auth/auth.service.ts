@@ -14,7 +14,6 @@ import {
   REFRESH_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_KEY,
 } from '@/constants/redis.constant';
-import { LoginDto } from './login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from '../permission/entities/permission.entity';
 import { Repository } from 'typeorm';
@@ -112,5 +111,7 @@ export class AuthService {
     return this.sharedService.generateRouter(menuList, '');
   }
 
-  async refreshToken(user: any) {}
+  async refreshToken(user: any) {
+    return '';
+  }
 }
