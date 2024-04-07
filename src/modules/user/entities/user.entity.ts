@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToOne } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToOne } from 'typeorm';
 import { Profile } from './profile.entity';
 import { Role } from '@/modules/role/entities/role.entity';
 import { Base } from '@/modules/base.entity';
+import { hashSync } from 'bcryptjs';
 
 @Entity({ comment: '用户表' })
 export class User extends Base {
@@ -35,4 +36,13 @@ export class User extends Base {
     },
   })
   roles: Role[];
+
+  /**
+   * 插入之前执行密码加密
+   */
+  @BeforeInsert()
+  hashPassword() {
+    this.password = hashSync(this.password);
+  }
+
 }

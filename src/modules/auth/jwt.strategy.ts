@@ -35,7 +35,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const accessTokenKey = this.authService.getAccessTokenKey({ id });
     // 检查用户名是否可用
     const user = await this.userService.findByUsername(username);
-    if (!user.enable) throw new CustomException(ErrorCode.ERR_11007);
+    if (!user) throw new CustomException(ErrorCode.ERR_11002);
+    if (!user?.enable) throw new CustomException(ErrorCode.ERR_11007);
     // // 检查用户有是否可用的角色
     if (!user.roles?.some((item) => item.enable))
       throw new CustomException(ErrorCode.ERR_11003);
@@ -58,6 +59,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const permissions = await this.roleService.findButtonPermissionsByRoleIds(
       roleIds,
     );
+    console.log(user,profileDto);
     // 返回当前登录账号信息，供下文使用
     return {
       id,

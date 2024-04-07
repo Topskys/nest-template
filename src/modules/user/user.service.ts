@@ -33,19 +33,19 @@ export class UserService {
       throw new CustomException(ErrorCode.ERR_10001);
     }
     // 插入用户信息
-    const newUser = this.userRep.create(createUserDto);
+    const newUser = this.userRep.create(createUserDto); // 等同于new User()后执行@BeforeInsert标记的方法
     // 更新用户角色
     if (roleIds?.length > 0) {
       newUser.roles = await this.roleRep.find({
         where: { id: In(roleIds) },
       });
     }
-    // 插入用户个人信息
+    // 判断是否插入默认用户个人信息
     if (!createUserDto?.profile) {
       newUser.profile = this.profileRep.create();
     }
-    // 密码加密
-    newUser.password = hashSync(newUser.password);
+    // 密码加密（已被实体的@BeforeInsert标记的hashPassword方法代替）
+    // newUser.password = hashSync(newUser.password);
     // 更新保存用户信息
     return await this.userRep.save(newUser);
   }

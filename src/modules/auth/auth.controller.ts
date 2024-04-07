@@ -29,6 +29,7 @@ import { UpdatePasswordDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
+import { Logger } from 'nestjs-pino'
 
 @Controller()
 export class AuthController {
@@ -37,7 +38,8 @@ export class AuthController {
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly permissionService: PermissionService,
-  ) {}
+    private readonly logger: Logger,
+  ) { }
 
   getCaptchaKey(captchaText: string) {
     return `${CAPTCHA_KEY}:${captchaText}`;
@@ -49,9 +51,7 @@ export class AuthController {
   async login(@Req() req: any, @Body() loginDto: LoginDto) {
     const { captcha } = loginDto;
     // 判断验证码
-    const redisCaptcha = await this.redisService.get(
-      this.getCaptchaKey(captcha),
-    );
+    const redisCaptcha = await this.redisService.get(this.getCaptchaKey(captcha));
     if (redisCaptcha !== captcha?.toLowerCase()) {
       throw new CustomException(ErrorCode.ERR_10003);
     }

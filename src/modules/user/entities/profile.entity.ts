@@ -4,9 +4,6 @@ import { Base } from '@/modules/base.entity';
 
 @Entity({ name: 'profile', comment: '用户个人信息表' })
 export class Profile extends Base {
-  @Column({ unique: true, comment: '用户编号' })
-  userId: string;
-
   @Column({ nullable: true, comment: '手机号' })
   phone: string;
 
@@ -29,6 +26,16 @@ export class Profile extends Base {
     createForeignKeyConstraints: false,
     onDelete: 'CASCADE',
   })
-  @JoinColumn() // 关联列
+  @JoinColumn({
+    name: 'user_id',
+    // referencedColumnName: 'id',
+    // foreignKeyConstraintName: 'user_id',
+  }) // 关联列
   user: User;
+  
+  /**
+   * 用于取代关联列插入与查询输出
+   */
+  @Column({ name: 'user_id', unique: true, comment: '用户编号' })
+  userId: string;
 }
