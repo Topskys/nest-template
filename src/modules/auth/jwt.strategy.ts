@@ -59,7 +59,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const permissions = await this.roleService.findButtonPermissionsByRoleIds(
       roleIds,
     );
-    console.log(user,profileDto);
     // 返回当前登录账号信息，供下文使用
     return {
       id,

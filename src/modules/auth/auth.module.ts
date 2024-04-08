@@ -10,7 +10,6 @@ import { LocalStrategy } from './local.strategy';
 import { SharedModule } from '@/shared/shared.module';
 import { RoleModule } from '../role/role.module';
 import { PermissionModule } from '../permission/permission.module';
-import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { LoggerModule } from 'nestjs-pino';
     RoleModule, //  在此引入角色模块，否则jwt.strategy会报错
     SharedModule, // 引入共享模块
     PermissionModule,
-    LoggerModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],

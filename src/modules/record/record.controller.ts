@@ -6,37 +6,34 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { RecordService } from './record.service';
-import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
+import { CreateRecordDto, DropRecordDto, PageRecordDto } from './record.dto';
+import { Result } from '@/utils/Result';
+import { DELETE_SUCCESS } from '@/constants';
+import { PageVo } from '@/vo/page.vo';
 
 @Controller('record')
 export class RecordController {
-  constructor(private readonly recordService: RecordService) {}
+  constructor(private readonly recordService: RecordService) { }
 
   @Post()
-  create(@Body() createRecordDto: CreateRecordDto) {
-    return this.recordService.create(createRecordDto);
+  async create(@Body() createRecordDto: CreateRecordDto) {
+    return await this.recordService.create(createRecordDto);
   }
 
   @Get()
-  findAll() {
-    return this.recordService.findAll();
+  async findAll(@Query() query: PageRecordDto) {
+    const { page, pageSize } = query;
+    const [rows, total] = await this.recordService.findAll(query);
+    return Result.ok(new PageVo(rows, total, page, pageSize));
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recordService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
-    return this.recordService.update(+id, updateRecordDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.recordService.remove(+id);
+  @Delete()
+  async remove(@Body() dropRecordDto: DropRecordDto) {
+    const { ids } = dropRecordDto;
+    await this.recordService.batchRemove(ids);
+    return Result.ok(undefined, DELETE_SUCCESS);
   }
 }

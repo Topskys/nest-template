@@ -1,11 +1,9 @@
-import { SharedService } from '@/shared/shared.service';
 import {
   Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
-  Param,
   Post,
   Req,
   Res,
@@ -27,9 +25,9 @@ import { Public } from '@/common/decorators/public.decorator';
 import { RedisService } from '@/shared/redis/redis.service';
 import { UpdatePasswordDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
+import { SharedService } from '@/shared/shared.service';
 import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
-import { Logger } from 'nestjs-pino'
 
 @Controller()
 export class AuthController {
@@ -38,7 +36,6 @@ export class AuthController {
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly permissionService: PermissionService,
-    private readonly logger: Logger,
   ) { }
 
   getCaptchaKey(captchaText: string) {
