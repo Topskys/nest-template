@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -9,6 +9,7 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { SharedModule } from './shared/shared.module';
 import { RecordModule } from './modules/record/record.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -24,12 +25,17 @@ import { UploadModule } from './modules/upload/upload.module';
     PermissionModule,
     RecordModule,
 
-    // 公共模块
-    SharedModule,
     // 文件上传
     UploadModule,
+    // 公共模块
+    SharedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).exclude('/dashboard/*').forRoutes('*');
+  }
+  
+}
