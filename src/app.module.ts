@@ -22,12 +22,11 @@ import { UploadModule } from './modules/upload/upload.module';
     UserModule,
     RoleModule,
     PermissionModule,
-    // 日志模块
     RecordModule,
 
     // 公共模块
     SharedModule,
-
+    // 文件上传
     UploadModule,
   ],
   controllers: [AppController],

@@ -9,6 +9,7 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtGuard } from '@/common/guards/jwt.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 
 /**
  * 公共模块
@@ -28,11 +29,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
           database: configService.get('DB_DATABASE'),
           synchronize: process.env.NODE_ENV === 'development',
           timezone: '+08:00',
-          logging: true,
+          // logging: true,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         };
       },
     }),
+    // 静态文件服务模块
     ServeStaticModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => [
@@ -42,6 +44,16 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         },
       ],
     }),
+    // 限速节流
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ([{
+        ttl: configService.get<number>('RATE_TTL'), // 60秒，单位为毫秒
+        limit: configService.get<number>('RATE_LIMIT') // 每60秒最多100个请求
+      }])
+    }),
+    // 日志模块
+
   ],
   providers: [
     SharedService,
@@ -67,16 +79,25 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       provide: 'APP_FILTER',
       useClass: AllExceptionFilter,
     },
+    // 好像不起作用
+    // { 
+    //   provide: 'APP_FILTER',
+    //   useClass: TypeOrmFilter,
+    // },
+    // {
+    //   provide: 'APP_FILTER',
+    //   useClass: ValidationFilter,
+    // },
     {
       // 全局拦截器
       provide: 'APP_INTERCEPTOR',
       useClass: TransformInterceptor,
     },
     {
-      // 全局参数校验管道
+      // 全局管道参数效验
       provide: 'APP_PIPE',
       useValue: new ValidationPipe({
-        whitelist: true,
+        whitelist: true, // 删除不在类上存在的字段
         transform: true, // 自动类型转换
       }),
     },
@@ -85,7 +106,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       provide: 'APP_GUARD',
       useClass: JwtGuard,
     },
+    {
+      // 全局节流
+      provide: 'APP_GUARD',
+      useClass: ThrottlerGuard,
+    }
   ],
   exports: [SharedService, RedisService],
 })
-export class SharedModule {}
+export class SharedModule { }
