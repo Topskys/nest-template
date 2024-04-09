@@ -158,3 +158,9 @@ export class AuthController {
 
 }
 ```
+
+## Node设置环境变量
+Windows下设置环境变量命令：
+```sh
+SET PORT=8000 && SET NODE_ENV=production # && node ./ncc-dist/index.js
+```

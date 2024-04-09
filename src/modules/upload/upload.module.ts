@@ -3,7 +3,7 @@ import { UploadService } from './upload.service';
 import { UploadController } from './upload.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { extname, join } from 'path';
+import * as path from 'path';
 import { diskStorage } from 'multer';
 
 @Module({
@@ -13,10 +13,10 @@ import { diskStorage } from 'multer';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         storage: diskStorage({
-          destination: join(process.cwd(), configService.get('MULTER_DEST')),
+          destination: path.join(process.cwd(), configService.get<string>('MULTER_DEST')),
           filename: (req, file, callback) => {
             const origName = file.originalname;
-            const fileName = `${new Date().getTime()}${extname(origName)}`;
+            const fileName = `${new Date().getTime()}${path.extname(origName)}`;
             return callback(null, fileName);
           },
         }),

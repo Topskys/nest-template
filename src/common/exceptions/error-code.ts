@@ -3,15 +3,15 @@ type ValueOf<T> = T[keyof T];
 export const ERR = {
   // 登录相关
   ERR_10000: { code: 10000, message: '参数校验异常' },
-  ERR_10001: { code: 10001, message: '用户已存在' },
-  ERR_10002: { code: 10002, message: '用户名或密码错误' },
-  ERR_10003: { code: 10003, message: '验证码错误' },
-  ERR_10004: { code: 10004, message: '密码验证失败' },
-  ERR_10005: { code: 10005, message: '该账号已被禁用' },
+  ERR_10001: { code: 400, message: '用户已存在' },
+  ERR_10002: { code: 400, message: '用户名或密码错误' },
+  ERR_10003: { code: 400, message: '验证码错误' },
+  ERR_10004: { code: 400, message: '密码验证失败' },
+  ERR_10005: { code: 400, message: '该账号已被禁用' },
   // token相关
-  ERR_11001: { code: 11001, message: '登录无效或无权限访问' },
-  ERR_11002: { code: 11002, message: '登录已过期' },
-  ERR_11003: { code: 11003, message: '请联系管理员申请权限' },
+  ERR_11001: { code: 400, message: '登录无效或无权限访问' },
+  ERR_11002: { code: 403, message: '登录已过期' },
+  ERR_11003: { code: 403, message: '请联系管理员申请权限' },
   ERR_11004: { code: 11004, message: '越权操作' },
   ERR_11005: { code: 11005, message: '当前用户无此角色' },
   ERR_11006: { code: 11006, message: '非法操作' },

@@ -11,12 +11,14 @@ import { RecordModule } from './modules/record/record.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
+console.log('-------ENV-------',process.env);
 @Module({
   imports: [
     // 配置模块
     ConfigModule.forRoot({
+      // cache: true,
       isGlobal: true,
-      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
     }),
     // 业务模块
     AuthModule,
@@ -35,6 +37,6 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).exclude('/dashboard/*').forRoutes('*');
+    // consumer.apply(LoggerMiddleware).exclude('/dashboard/*').forRoutes('*');
   }
 }

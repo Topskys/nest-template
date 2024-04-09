@@ -4,7 +4,7 @@ import { SharedService } from './shared.service';
 import { AnyExceptionFilter } from '@/common/filters/any-exception.filter';
 import { ConfigService } from '@nestjs/config';
 import { createClient } from 'redis';
-import { join } from 'path';
+import * as path from 'path';
 import { isDev } from '@/utils';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtGuard } from '@/common/guards/jwt.guard';
@@ -27,7 +27,7 @@ import { SqLoggerService } from './logger/sqLogger.service';
           type: 'mysql',
           autoLoadEntities: true,
           host: configService.get('DB_HOST'),
-          port: configService.get('DB_PORT'),
+          port: +configService.get('DB_PORT'),
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
@@ -45,7 +45,7 @@ import { SqLoggerService } from './logger/sqLogger.service';
       useFactory: (configService: ConfigService) => [
         {
           serveRoot: configService.get('STATIC_PREFIX'),
-          rootPath: join(process.cwd(), configService.get('STATIC_PATH')),
+          rootPath: path.join(process.cwd(), configService.get('STATIC_PATH')),
         },
       ],
     }),

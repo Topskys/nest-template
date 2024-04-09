@@ -1,10 +1,10 @@
 // 可参考 https://blog.csdn.net/fwzzzzz/article/details/116160816
 import { isDev } from '@/utils';
 import { Configuration } from 'log4js';
-import { resolve } from 'path';
+import * as path from 'path';
 
 // 获取当前工作目录
-const LOG_DIR = resolve(process.cwd(), 'logs');
+const LOG_DIR = path.resolve(process.cwd(), 'logs');
 
 const log4jsConfig: Configuration = {
   // 输出日志配置
