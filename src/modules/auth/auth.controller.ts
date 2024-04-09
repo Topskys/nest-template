@@ -28,6 +28,7 @@ import { UserService } from '../user/user.service';
 import { SharedService } from '@/shared/shared.service';
 import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
+import { Log } from '@/common/decorators';
 
 @Controller()
 export class AuthController {
@@ -36,19 +37,22 @@ export class AuthController {
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly permissionService: PermissionService,
-  ) { }
+  ) {}
 
   getCaptchaKey(captchaText: string) {
     return `${CAPTCHA_KEY}:${captchaText}`;
   }
 
+  @Log('登录')
   @Public()
   @UseGuards(LocalGuard) // 会将当前请求的user对象挂载到request上
   @Post('login')
   async login(@Req() req: any, @Body() loginDto: LoginDto) {
     const { captcha } = loginDto;
     // 判断验证码
-    const redisCaptcha = await this.redisService.get(this.getCaptchaKey(captcha));
+    const redisCaptcha = await this.redisService.get(
+      this.getCaptchaKey(captcha),
+    );
     if (redisCaptcha !== captcha?.toLowerCase()) {
       throw new CustomException(ErrorCode.ERR_10003);
     }

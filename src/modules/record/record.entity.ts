@@ -12,6 +12,45 @@ export class Record {
   id: number;
 
   @Column({
+    comment: 'IP',
+  })
+  ip: string;
+
+  @Column({
+    nullable: true,
+    comment: 'ip解析的位置（城市）',
+  })
+  location: string;
+
+  @Column({ comment: '路径', nullable: true })
+  path: string;
+
+  @Column({ comment: '名称', nullable: true })
+  name?: string;
+
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: '记录模块',
+    nullable: true,
+  })
+  module: string;
+
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: '记录动作函数名',
+    nullable: true,
+  })
+  action: string;
+
+  @Column({ type: 'text', comment: '参数', nullable: true })
+  params: string;
+
+  @Column({ name: 'cost_time', comment: '耗时（毫秒）', nullable: true })
+  ms: number;
+
+  @Column({
     name: 'operator_id',
     comment: '操作人ID',
     nullable: true,
@@ -26,39 +65,6 @@ export class Record {
   })
   operatorName: string;
 
-  @Column({
-    type: 'varchar',
-    length: 256,
-    comment: '记录动作',
-    nullable: true,
-  })
-  action: string;
-
-  @Column({
-    comment: 'IP',
-  })
-  ip: string;
-
-  @Column({
-    nullable: true,
-    comment: 'ip解析的位置',
-  })
-  location: string;
-
-  @Column({
-    type: 'varchar',
-    length: 256,
-    comment: '记录模块',
-    nullable: true,
-  })
-  module: string;
-
-  @Column({ type: 'varchar', length: 256, comment: '信息', nullable: true })
-  message: string;
-
-  @Column({ type: 'text', comment: '详情', nullable: true, })
-  detail: string;
-
   @CreateDateColumn({
     name: 'create_time',
     type: 'timestamp',
@@ -66,12 +72,4 @@ export class Record {
     nullable: true,
   })
   createTime: Date;
-
-  @UpdateDateColumn({
-    name: 'update_time',
-    type: 'timestamp',
-    comment: '更新时间',
-    nullable: true,
-  })
-  updateTime: Date;
 }

@@ -1,4 +1,11 @@
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+} from 'typeorm';
 import { Profile } from './profile.entity';
 import { Role } from '@/modules/role/entities/role.entity';
 import { Base } from '@/modules/base.entity';
@@ -44,5 +51,4 @@ export class User extends Base {
   hashPassword() {
     this.password = hashSync(this.password);
   }
-
 }

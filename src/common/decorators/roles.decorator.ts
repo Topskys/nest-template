@@ -1,3 +1,9 @@
 import { SetMetadata } from '@nestjs/common';
+import { DecoratorEnum } from '@/constants/decorator.constant';
 
-export const Roles = (...args: string[]) => SetMetadata('roles', args);
+/**
+ * 角色权限效验装饰器
+ * @param roles 角色数组
+ */
+export const Roles = (roles?: string[]) =>
+  SetMetadata(DecoratorEnum.ROLES, roles);

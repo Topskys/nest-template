@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { CustomException, ErrorCode } from '../exceptions/custom.exception';
+import { DecoratorEnum } from '@/constants/decorator.constant';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -13,7 +14,10 @@ export class RoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     const currentUserRoles = [];
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    const roles = this.reflector.get<string[]>(
+      DecoratorEnum.ROLES,
+      context.getHandler(),
+    );
     if (!currentUserRoles?.length)
       throw new CustomException(ErrorCode.ERR_11003);
     if (!roles?.length) return true;

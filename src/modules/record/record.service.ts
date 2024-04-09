@@ -6,12 +6,14 @@ import { CreateRecordDto, PageRecordDto } from './record.dto';
 
 @Injectable()
 export class RecordService {
-  constructor(@InjectRepository(Record) private recordRep: Repository<Record>) { }
+  constructor(
+    @InjectRepository(Record) private recordRep: Repository<Record>,
+  ) {}
 
   /**
    * 插入记录
    */
-  async create(createRecordDto: CreateRecordDto) {
+  async create(req: any, createRecordDto: CreateRecordDto) {
     const record = this.recordRep.create(createRecordDto);
     await this.recordRep.save(record);
     return true;

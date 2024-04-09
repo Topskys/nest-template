@@ -1,4 +1,8 @@
 import { SetMetadata } from '@nestjs/common';
+import { DecoratorEnum } from '@/constants/decorator.constant';
 
-export const IS_PUBLIC_KEY = 'isPublic'; // 元数据键
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true); // SkipAuth or AllowAnon
+/**
+ * 跳过登录验证装饰器
+ * SkipAuth or AllowAnon
+ */
+export const Public = () => SetMetadata(DecoratorEnum.IS_PUBLIC, true);

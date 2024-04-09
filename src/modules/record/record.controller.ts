@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { RecordService } from './record.service';
 import { CreateRecordDto, DropRecordDto, PageRecordDto } from './record.dto';
@@ -16,11 +17,11 @@ import { PageVo } from '@/vo/page.vo';
 
 @Controller('record')
 export class RecordController {
-  constructor(private readonly recordService: RecordService) { }
+  constructor(private readonly recordService: RecordService) {}
 
   @Post()
-  async create(@Body() createRecordDto: CreateRecordDto) {
-    return await this.recordService.create(createRecordDto);
+  async create(@Req() req: any, @Body() createRecordDto: CreateRecordDto) {
+    return await this.recordService.create(req, createRecordDto);
   }
 
   @Get()

@@ -32,7 +32,7 @@ export class Profile extends Base {
     // foreignKeyConstraintName: 'user_id',
   }) // 关联列
   user: User;
-  
+
   /**
    * 用于取代关联列插入与查询输出
    */
