@@ -9,7 +9,14 @@ const LOG_DIR = path.resolve(process.cwd(), 'logs');
 const log4jsConfig: Configuration = {
   // 输出日志配置
   appenders: {
-    console: { type: 'console' }, // 打印到控制台
+    console: { 
+      type: 'console',
+      // 布局参考 https://log4js-node.github.io/log4js-node/layouts.html
+      layout: {
+        type: 'pattern',
+        pattern:"\x1b[32m[Nest] %z  - \x1b[37m%d{yyyy年MM月dd日 hh:mm:ss}%]        \x1b[33m%p %M \x1b[32m%m",
+      }
+     }, // 打印到控制台
     access: {
       type: 'dateFile',
       filename: `${LOG_DIR}/access/access.log`,
@@ -50,12 +57,13 @@ const log4jsConfig: Configuration = {
       level: 'info',
     },
     error: {
-      appenders: isDev ? ['console'] : ['console', 'errors'],
+      appenders: isDev ? ['console'] : ['errors'],
       level: 'error',
     },
   },
   // pm2: true,
   // pm2InstanceVar: 'INSTANCE_ID',
+  // disableClustering: true,
 };
 
 export default log4jsConfig;

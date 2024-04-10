@@ -12,7 +12,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import log4js from '@/utils/log4js';
-import { LogService } from './logger/log.service';
+import { LoggerService } from './logger/logger.service';
 import { SqLoggerService } from './logger/sqLogger.service';
 import { LoggerInterceptor } from '@/common/interceptors/logger.interceptor';
 import { RecordModule } from '@/modules/record/record.module';
@@ -61,13 +61,13 @@ import { RecordModule } from '@/modules/record/record.module';
         },
       ],
     }),
-    // 记录模块
+    // 操作记录模块
     RecordModule,
   ],
   providers: [
     SharedService,
     RedisService, // 能够在全局使用（拦截器）
-    LogService, // 全局日志服务类（实现LoggerService接口）
+    LoggerService, // 全局日志服务类（实现LoggerService接口）
     SqLoggerService,
     {
       // 连接redis客户端
@@ -111,7 +111,7 @@ import { RecordModule } from '@/modules/record/record.module';
         exceptionFactory: (errors) => {
           // 取出第一个错误信息并抛出错误
           const errorMessage = Object.values(errors[0].constraints)[0];
-          log4js('error').error(`Validation failed：${JSON.stringify(errors)}`);
+          log4js('error').error(`Validation failed：${JSON.stringify(errors)}`); // 日志文件没有记录
           throw new BadRequestException(errorMessage);
         },
       }),
@@ -127,6 +127,6 @@ import { RecordModule } from '@/modules/record/record.module';
       useClass: ThrottlerGuard,
     },
   ],
-  exports: [SharedService, RedisService, LogService, SqLoggerService],
+  exports: [SharedService, RedisService, LoggerService, SqLoggerService],
 })
 export class SharedModule { }
