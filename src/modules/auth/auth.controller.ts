@@ -29,6 +29,8 @@ import { SharedService } from '@/shared/shared.service';
 import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
 import { Log } from '@/common/decorators';
+import { User } from '@/common/decorators/user.decorator';
+import { ProfileVo } from '@/vo/profile.vo';
 
 @Controller()
 export class AuthController {
@@ -87,8 +89,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Req() req: any) {
-    if (await this.authService.logout(req.user)) {
+  async logout(@User('id') id: string) {
+    if (await this.authService.logout(id)) {
       return Result.ok(undefined, LOGOUT_SUCCESS);
     }
     return Result.error();
@@ -114,9 +116,8 @@ export class AuthController {
    * 获取当前登录用户的个人信息
    */
   @Get('profile')
-  async getUserInfo(@Req() req: any) {
-    const { user: userInfo } = req;
-    return Result.ok(userInfo);
+  async getUserInfo(@User() profileVo: ProfileVo) {
+    return Result.ok(profileVo);
   }
 
   /**
@@ -125,11 +126,13 @@ export class AuthController {
    * @param body 请求体
    */
   @Post('reset-password')
-  async changePassword(@Req() req: any, @Body() body: UpdatePasswordDto) {
-    const { id } = req.user;
+  async changePassword(
+    @User('id') id: string,
+    @Body() body: UpdatePasswordDto,
+  ) {
     const { password } = body;
     await this.userService.resetPassword(id, password);
-    await this.authService.logout(req);
+    await this.authService.logout(id);
     return Result.ok(undefined, EDIT_SUCCESS);
   }
 }

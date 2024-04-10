@@ -1,6 +1,6 @@
-import './redis.constant'
+import './redis.constant';
 
-export { DecoratorEnum } from './decorator.constant'
+export { DecoratorEnum } from './decorator.constant';
 
 export const ADD_SUCCESS = '添加成功';
 

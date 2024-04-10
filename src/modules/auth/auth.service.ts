@@ -39,6 +39,9 @@ export class AuthService {
     return `${REFRESH_TOKEN_KEY}:${payload.id}`;
   }
 
+  /**
+   * 登录
+   */
   async login(user: any) {
     // 判断用户角色enable属性是否有为true
     if (!user.enable) throw new CustomException(ErrorCode.ERR_10005);
@@ -48,7 +51,7 @@ export class AuthService {
     }
     const roleCodes = user?.roles.map((r) => r.code);
     // 生成双token
-    const payload = { id: user.id, roleCodes, username: user.username };
+    const payload = { id: user.id, roleCodes, username: user.username }; // Jwt payload
     const accessToken = this.generateToken(
       payload,
       this.getAccessTokenKey(payload),
@@ -73,18 +76,19 @@ export class AuthService {
 
   /**
    * 退出登录
-   * @param user
-   * @returns
    */
-  async logout(user: any) {
+  async logout(id: string) {
     // 删除当前用户相关信息
-    if (user.userId) {
-      await this.redisService.del(this.getAccessTokenKey(user));
+    if (id) {
+      await this.redisService.del(this.getAccessTokenKey({ id }));
       return true;
     }
     return false;
   }
 
+  /**
+   * 刷新令牌
+   */
   async refreshToken(user: any) {
     return '';
   }

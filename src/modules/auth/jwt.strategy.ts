@@ -12,6 +12,7 @@ import {
   ErrorCode,
 } from '@/common/exceptions/custom.exception';
 import { ACCESS_TOKEN_EXPIRES_IN } from '@/constants/redis.constant';
+import { ProfileVo } from '@/vo/profile.vo';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -37,7 +38,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userService.findByUsername(username);
     if (!user) throw new CustomException(ErrorCode.ERR_11002);
     if (!user?.enable) throw new CustomException(ErrorCode.ERR_11007);
-    // // 检查用户有是否可用的角色
+
+    // 检查用户有是否可用的角色
     if (!user.roles?.some((item) => item.enable))
       throw new CustomException(ErrorCode.ERR_11003);
 
@@ -53,19 +55,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // 延长令牌的有效期（也可以使用双token或通过过期时间刷新方案）
     // this.redisService.set(accessTokenKey, authorization, ACCESS_TOKEN_EXPIRES_IN);
-    const profileDto = new ProfileDto(user.profile);
     // 查询角色对应按钮权限
     const roleIds = user.roles?.map((item) => item.id);
     const permissions = await this.roleService.findButtonPermissionsByRoleIds(
       roleIds,
     );
     // 返回当前登录账号信息，供下文使用
-    return {
-      id,
-      username,
-      ...profileDto,
-      roles: roleCodes,
-      permissions,
-    };
+    user.roles = roleCodes;
+    return new ProfileVo({ ...user, permissions });
   }
 }

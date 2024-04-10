@@ -13,7 +13,10 @@ import { diskStorage } from 'multer';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         storage: diskStorage({
-          destination: path.join(process.cwd(), configService.get<string>('MULTER_DEST')),
+          destination: path.join(
+            process.cwd(),
+            configService.get<string>('MULTER_DEST'),
+          ),
           filename: (req, file, callback) => {
             const origName = file.originalname;
             const fileName = `${new Date().getTime()}${path.extname(origName)}`;

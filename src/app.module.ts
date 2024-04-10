@@ -9,16 +9,15 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { SharedModule } from './shared/shared.module';
 import { RecordModule } from './modules/record/record.module';
 import { UploadModule } from './modules/upload/upload.module';
-import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
-console.log('-------ENV-------',process.env);
 @Module({
   imports: [
     // 配置模块
     ConfigModule.forRoot({
-      // cache: true,
+      cache: true,
       isGlobal: true,
-      envFilePath: [`.env.${process.env.NODE_ENV}`],
+      ignoreEnvFile: false,
+      envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
     }),
     // 业务模块
     AuthModule,
@@ -40,3 +39,5 @@ export class AppModule implements NestModule {
     // consumer.apply(LoggerMiddleware).exclude('/dashboard/*').forRoutes('*');
   }
 }
+
+console.log(process.env)

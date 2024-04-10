@@ -73,7 +73,9 @@ import { SqLoggerService } from './logger/sqLogger.service';
         const redisClient = createClient({
           url: configService.get<string>('REDIS_URL'),
         });
-        redisClient.on('connect', () => log4js().info('Redis Client Connected'));
+        redisClient.on('connect', () =>
+          log4js().info('Redis Client Connected'),
+        );
         redisClient.on('error', (err) => {
           log4js('error').error('Redis Client Error', err);
         });
@@ -121,4 +123,4 @@ import { SqLoggerService } from './logger/sqLogger.service';
   ],
   exports: [SharedService, RedisService, LogService, SqLoggerService],
 })
-export class SharedModule { }
+export class SharedModule {}
