@@ -11,7 +11,6 @@ import {
   CustomException,
   ErrorCode,
 } from '@/common/exceptions/custom.exception';
-import { ACCESS_TOKEN_EXPIRES_IN } from '@/constants/redis.constant';
 import { ProfileVo } from '@/vo/profile.vo';
 
 @Injectable()

@@ -2,9 +2,10 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { DecoratorEnum } from '@/constants';
 import { RecordService } from '@/modules/record/record.service';
 
@@ -13,34 +14,49 @@ import { RecordService } from '@/modules/record/record.service';
  */
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(private readonly recordService: RecordService) {}
+  constructor(private readonly recordService: RecordService) { }
 
   async intercept(
-    context: ExecutionContext,
+    ctx: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<any>> {
+    // console.log('Before...');
     const startTime = Date.now();
-    // 获取请求体和响应体
-    const req = context.switchToHttp().getRequest();
-    const res = context.switchToHttp().getResponse<Response>();
+    const req = ctx.switchToHttp().getRequest();
     // 获取日志打印参数
     const isPrint = Reflect.getMetadata(
       DecoratorEnum.LOG_PRINT,
-      context.getHandler(),
+      ctx.getHandler(),
     );
     const message = Reflect.getMetadata(
       DecoratorEnum.LOG_MESSAGE,
-      context.getHandler(),
+      ctx.getHandler(),
     );
-    // TODO：记录日志（ip 城市 名称 路径 方法 参数 耗时 时间）
-    const { ip, method, path, route, originalUrl, query, param, body } = req;
-    console.log(
-      '---------------LoggerInterceptor--------------------',
-      isPrint,
-      message,
+    return next.handle().pipe(
+      // console.log('After...');
+      tap(async () => {
+        // 是否打印日志
+        const { query, params, body, path } = req;
+        const ignoreRoutes = process.env.LOG_IGNORE_ROUTES?.split(',');
+        if (isPrint === undefined || ignoreRoutes?.includes(path)) return;
+        if (isPrint) Logger.log(`${message}`);
+        // 记录日志
+        const record: any = {
+          ip: req.ip,
+          method: req.method,
+          path: path || req.originalUrl,
+          params: JSON.stringify({ ...query, ...params, ...body }),
+          module: ctx.getClass()['name'],
+          action: ctx.getHandler()['name'],
+          description: message,
+          costTime: Date.now() - startTime,
+        };
+        await this.recordService.create(req, record);
+      }),
+      // 捕捉异常
+      // catchError((err) => {}),
+      // 响应映射，不适用于特定于库的响应策略（直接使用@Res()对象是禁止的）
+      // map((res) => {})
     );
-    const record = { ip, method, path: originalUrl, query, param, body, ms: 0 };
-    await this.recordService.create(req, record);
-    return next.handle();
   }
 }

@@ -24,8 +24,6 @@ export class ValidationPipe implements PipeTransform {
     const errors = await validate(classObject);
     if (errors.length > 0) {
       // 取出第一个错误信息并抛出错误
-      // const error = errors?.shift()?.constraints;
-      // const errorMessage = error[Object.keys(error)[0]];
       const errorMessage = Object.values(errors[0].constraints)[0];
       log4js('error').error(`Validation failed：${JSON.stringify(errors)}`);
       throw new BadRequestException(errorMessage);

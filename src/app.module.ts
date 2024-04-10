@@ -40,4 +40,4 @@ export class AppModule implements NestModule {
   }
 }
 
-console.log(process.env)
+// console.log(process.env);

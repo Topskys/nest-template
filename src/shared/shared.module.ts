@@ -1,4 +1,4 @@
-import { BadRequestException, Module, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Logger, Module, ValidationPipe } from '@nestjs/common';
 import { RedisService } from './redis/redis.service';
 import { SharedService } from './shared.service';
 import { AnyExceptionFilter } from '@/common/filters/any-exception.filter';
@@ -55,7 +55,7 @@ import { SqLoggerService } from './logger/sqLogger.service';
       useFactory: (configService: ConfigService) => [
         {
           ttl: configService.get<number>('RATE_TTL'), // 60秒，单位为毫秒
-          limit: configService.get<number>('RATE_LIMIT'), // 每60秒最多100个请求
+          limit: configService.get<number>('RATE_LIMIT'), // 每60秒最多600个请求
         },
       ],
     }),
@@ -74,7 +74,7 @@ import { SqLoggerService } from './logger/sqLogger.service';
           url: configService.get<string>('REDIS_URL'),
         });
         redisClient.on('connect', () =>
-          log4js().info('Redis Client Connected'),
+          Logger.log('Redis Client Connected'),
         );
         redisClient.on('error', (err) => {
           log4js('error').error('Redis Client Error', err);
@@ -90,6 +90,7 @@ import { SqLoggerService } from './logger/sqLogger.service';
     },
     // {
     //   // 全局拦截器
+    //   // 因为需要注入RecordService，故已在main.ts中注册
     //   provide: APP_INTERCEPTOR,
     //   useClass: LoggerInterceptor,
     // },
@@ -107,8 +108,6 @@ import { SqLoggerService } from './logger/sqLogger.service';
           throw new BadRequestException(errorMessage);
         },
       }),
-      // 自定以管道效验器
-      // useClass: ValidationPipe,
     },
     {
       // 全局JWT守卫

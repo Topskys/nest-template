@@ -21,15 +21,13 @@ import {
   CustomException,
   ErrorCode,
 } from '@/common/exceptions/custom.exception';
-import { Public } from '@/common/decorators/public.decorator';
 import { RedisService } from '@/shared/redis/redis.service';
 import { UpdatePasswordDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 import { SharedService } from '@/shared/shared.service';
 import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
-import { Log } from '@/common/decorators';
-import { User } from '@/common/decorators/user.decorator';
+import { Log, User, Public } from '@/common/decorators';
 import { ProfileVo } from '@/vo/profile.vo';
 
 @Controller()
@@ -39,7 +37,7 @@ export class AuthController {
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly permissionService: PermissionService,
-  ) {}
+  ) { }
 
   getCaptchaKey(captchaText: string) {
     return `${CAPTCHA_KEY}:${captchaText}`;
@@ -67,6 +65,7 @@ export class AuthController {
    * 生成图片验证码
    * @param res 响应体
    */
+  @Log('获取验证码')
   @Public()
   @Get('captcha')
   async createCaptcha(@Res() res: Response) {

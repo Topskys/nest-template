@@ -3,16 +3,16 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ comment: '操作日志表' }) // ip 城市 名称 路径 方法 参数 耗时 时间
+@Entity({ comment: '操作日志表' }) //（ip 城市 路由 路由方法 模块 方法 参数 描述 操作人 操作人姓名）
 export class Record {
   @PrimaryGeneratedColumn({ comment: '编号' })
   id: number;
 
   @Column({
     comment: 'IP',
+    nullable: true,
   })
   ip: string;
 
@@ -22,24 +22,20 @@ export class Record {
   })
   location: string;
 
+  @Column({ comment: '请求方法', nullable: true })
+  method: string;
+
   @Column({ comment: '路径', nullable: true })
   path: string;
 
-  @Column({ comment: '名称', nullable: true })
-  name?: string;
-
   @Column({
-    type: 'varchar',
-    length: 256,
-    comment: '记录模块',
+    comment: '模块名',
     nullable: true,
   })
   module: string;
 
   @Column({
-    type: 'varchar',
-    length: 256,
-    comment: '记录动作函数名',
+    comment: '方法名',
     nullable: true,
   })
   action: string;
@@ -47,8 +43,14 @@ export class Record {
   @Column({ type: 'text', comment: '参数', nullable: true })
   params: string;
 
-  @Column({ name: 'cost_time', comment: '耗时（毫秒）', nullable: true })
-  ms: number;
+  @Column({ name: 'cost_time', comment: '耗时（ms）', nullable: true })
+  costTime: number;
+
+  @Column({
+    comment: '描述',
+    nullable: true,
+  })
+  description: string;
 
   @Column({
     name: 'operator_id',
@@ -60,7 +62,7 @@ export class Record {
   @Column({
     name: 'operator_name',
     type: 'varchar',
-    comment: '操作人账号',
+    comment: '操作人姓名',
     nullable: true,
   })
   operatorName: string;
