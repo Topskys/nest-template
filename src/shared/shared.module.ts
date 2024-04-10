@@ -10,10 +10,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtGuard } from '@/common/guards/jwt.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import log4js from '@/utils/log4js';
 import { LogService } from './logger/log.service';
 import { SqLoggerService } from './logger/sqLogger.service';
+import { LoggerInterceptor } from '@/common/interceptors/logger.interceptor';
+import { RecordModule } from '@/modules/record/record.module';
 
 /**
  * 公共模块
@@ -59,11 +61,13 @@ import { SqLoggerService } from './logger/sqLogger.service';
         },
       ],
     }),
+    // 记录模块
+    RecordModule,
   ],
   providers: [
     SharedService,
     RedisService, // 能够在全局使用（拦截器）
-    LogService, // 全局日志服务类
+    LogService, // 全局日志服务类（实现LoggerService接口）
     SqLoggerService,
     {
       // 连接redis客户端
@@ -88,12 +92,15 @@ import { SqLoggerService } from './logger/sqLogger.service';
       provide: APP_FILTER,
       useClass: AnyExceptionFilter,
     },
-    // {
-    //   // 全局拦截器
-    //   // 因为需要注入RecordService，故已在main.ts中注册
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggerInterceptor,
-    // },
+    {
+      // 全局拦截器
+      // 在拦截器中注入服务类的两种方式
+      // 01 在使用拦截器的模块中注入服务类和实体（或该服务模块）
+      // 02 在main.ts中注册拦截器并注入服务类，如：
+      // app.useGlobalInterceptors(new LoggerInterceptor(app.get(RecordService)));
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
     {
       // 全局管道参数效验
       provide: APP_PIPE,
@@ -122,4 +129,4 @@ import { SqLoggerService } from './logger/sqLogger.service';
   ],
   exports: [SharedService, RedisService, LogService, SqLoggerService],
 })
-export class SharedModule {}
+export class SharedModule { }
