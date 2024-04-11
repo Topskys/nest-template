@@ -1,4 +1,9 @@
-import { BadRequestException, Logger, Module, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  Logger,
+  Module,
+  ValidationPipe,
+} from '@nestjs/common';
 import { RedisService } from './redis/redis.service';
 import { SharedService } from './shared.service';
 import { AnyExceptionFilter } from '@/common/filters/any-exception.filter';
@@ -11,11 +16,11 @@ import { JwtGuard } from '@/common/guards/jwt.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import log4js from '@/utils/log4js';
 import { LoggerService } from './logger/logger.service';
 import { SqLoggerService } from './logger/sqLogger.service';
 import { LoggerInterceptor } from '@/common/interceptors/logger.interceptor';
 import { RecordModule } from '@/modules/record/record.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 /**
  * 公共模块
@@ -63,11 +68,18 @@ import { RecordModule } from '@/modules/record/record.module';
     }),
     // 操作记录模块
     RecordModule,
+    // 全局缓存
+    // TODO：修改缓存方式
+    // FIXME：当指定store为redisStore时，会报错，暂不修改
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 24 * 60 * 60 * 1000, // 1d 缓存时间，v5单位为毫秒
+    })
   ],
   providers: [
     SharedService,
     RedisService, // 能够在全局使用（拦截器）
-    LoggerService, // 全局日志服务类（实现LoggerService接口）
+    LoggerService, // 全局日志服务类
     SqLoggerService,
     {
       // 连接redis客户端
@@ -77,11 +89,9 @@ import { RecordModule } from '@/modules/record/record.module';
         const redisClient = createClient({
           url: configService.get<string>('REDIS_URL'),
         });
-        redisClient.on('connect', () =>
-          Logger.log('Redis Client Connected'),
-        );
+        redisClient.on('connect', () => Logger.log('Redis Client Connected'));
         redisClient.on('error', (err) => {
-          log4js('error').error('Redis Client Error', err);
+          Logger.error('Redis Client Error', err);
         });
         await redisClient.connect();
         return redisClient;
@@ -111,22 +121,32 @@ import { RecordModule } from '@/modules/record/record.module';
         exceptionFactory: (errors) => {
           // 取出第一个错误信息并抛出错误
           const errorMessage = Object.values(errors[0].constraints)[0];
-          log4js('error').error(`Validation failed：${JSON.stringify(errors)}`); // 日志文件没有记录
+          Logger.error(`Validation failed：${JSON.stringify(errors)}`); // 日志文件没有记录
           throw new BadRequestException(errorMessage);
         },
       }),
     },
-    {
-      // 全局JWT守卫
-      provide: APP_GUARD,
-      useClass: JwtGuard,
-    },
+    // {
+    //   // 全局JWT守卫
+    //   provide: APP_GUARD,
+    //   useClass: JwtGuard,
+    // },
     {
       // 全局节流
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    {
+      // 全局缓存拦截器
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    }
   ],
-  exports: [SharedService, RedisService, LoggerService, SqLoggerService],
+  exports: [
+    SharedService,
+    RedisService,
+    LoggerService,
+    SqLoggerService
+  ],
 })
 export class SharedModule { }

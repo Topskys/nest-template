@@ -29,6 +29,7 @@ import { PermissionService } from '../permission/permission.service';
 import { Meta, RouterVo } from '@/vo/router.vo';
 import { Log, User, Public } from '@/common/decorators';
 import { ProfileVo } from '@/vo/profile.vo';
+import { CacheKey } from '@nestjs/cache-manager';
 
 @Controller()
 export class AuthController {
@@ -37,7 +38,7 @@ export class AuthController {
     private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly permissionService: PermissionService,
-  ) { }
+  ) {}
 
   getCaptchaKey(captchaText: string) {
     return `${CAPTCHA_KEY}:${captchaText}`;
@@ -120,8 +121,8 @@ export class AuthController {
   }
 
   /**
-   * 重置当前账号的密码
-   * @param req 请求
+   * 重置当前登录账号的密码
+   * @param id 当前登录用户id
    * @param body 请求体
    */
   @Post('reset-password')

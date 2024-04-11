@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Record } from './record.entity';
 import { Between, FindManyOptions, Repository } from 'typeorm';
 import { CreateRecordDto, PageRecordDto } from './record.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class RecordService {
   constructor(
     @InjectRepository(Record) private recordRep: Repository<Record>,
-  ) {}
+  ) { }
 
   /**
    * 插入记录
@@ -42,5 +43,16 @@ export class RecordService {
   async batchRemove(ids: string[]) {
     const result = await this.recordRep.delete(ids);
     return result.affected > 0;
+  }
+
+  /**
+   * 定时任务
+   * 重置数据库记录表（注意：将会清空所有数据）
+   */
+  // @Cron("")
+  async resetRecord() {
+    await this.recordRep.clear();
+    Logger.log('重置数据库记录表', 'RecordService');
+    return true;
   }
 }
