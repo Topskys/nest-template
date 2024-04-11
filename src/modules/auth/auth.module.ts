@@ -24,7 +24,7 @@ import { PermissionModule } from '../permission/permission.module';
       },
     }),
     UserModule,
-    RoleModule, //  在此引入角色模块，否则jwt.strategy会报错
+    RoleModule, // 在此引入角色模块，否则jwt.strategy会报错
     SharedModule, // 引入共享模块
     PermissionModule,
   ],

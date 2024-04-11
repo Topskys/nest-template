@@ -11,7 +11,7 @@ export class SqLoggerService implements TypeOrmLogger {
   private logger: (category?: string) => Logger = getLogger;
 
   logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
-    this.logger().info(`[QUERY]: ${query}`);
+    // this.logger().info(`[QUERY]: ${query}`);
   }
 
   logQueryError(
@@ -29,27 +29,27 @@ export class SqLoggerService implements TypeOrmLogger {
     parameters?: any[],
     queryRunner?: QueryRunner,
   ) {
-    this.logger().info(`[QUERY]: ${query} [TIME]：${time}`);
+    this.logger().info(`[QUERY_SLOW]: ${query} [TIME]：${time}`);
   }
 
   logSchemaBuild(message: string, queryRunner?: QueryRunner) {
-    this.logger().info(`[SCHEMA BUILD]: ${message}`);
+    // this.logger().info(`[SCHEMA BUILD]: ${message}`);
   }
 
   logMigration(message: string, queryRunner?: QueryRunner) {
-    this.logger().info(`[SCHEMA BUILD]: ${message}`);
+    // this.logger().info(`[SCHEMA BUILD]: ${message}`);
   }
 
   log(level: 'info' | 'log' | 'warn', message: any, queryRunner?: QueryRunner) {
     switch (level) {
       case 'log':
-        this.logger().debug(`[LOG]: ${message}`);
+        // this.logger().debug(`[LOG]: ${message}`);
         break;
       case 'info':
-        this.logger().info(`[INFO]: ${message}`);
+        // this.logger().info(`[INFO]: ${message}`);
         break;
       case 'warn':
-        this.logger().warn(`[WARN]: ${message}`);
+        // this.logger().warn(`[WARN]: ${message}`);
         break;
     }
   }

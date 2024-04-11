@@ -3,7 +3,7 @@ import getLogger from '@/utils/log4js';
 import { Logger as log4jsLogger } from 'log4js';
 
 /**
- * 继承日志服务类（暂不使用）
+ * 继承日志服务类
  * 01 app.useLogger(app.get(LogService));
  * 02 Logger.info(message)
  */
@@ -18,7 +18,7 @@ export class LoggerService extends ConsoleLogger {
   /**
    * 重写log方法
    * @param message 消息
-   * @param optionalParams 剩余参数
+   * @param args 剩余参数
    */
   log(message: any, ...args: any[]) {
     super.log(message, ...args);
@@ -29,7 +29,7 @@ export class LoggerService extends ConsoleLogger {
   /**
    * 重写error方法
    * @param message 消息
-   * @param optionalParams 剩余参数
+   * @param args 剩余参数
    */
   error(message: any, ...args: any[]) {
     super.error(message, ...args);

@@ -14,7 +14,7 @@ import { RecordService } from '@/modules/record/record.service';
  */
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(private readonly recordService: RecordService) { }
+  constructor(private readonly recordService: RecordService) {}
 
   async intercept(
     ctx: ExecutionContext,

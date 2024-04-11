@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -16,8 +16,8 @@ import { UploadModule } from './modules/upload/upload.module';
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
-      ignoreEnvFile: false,
-      envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
+      expandVariables: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
     // 业务模块
     AuthModule,
@@ -34,10 +34,6 @@ import { UploadModule } from './modules/upload/upload.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // consumer.apply(LoggerMiddleware).exclude('/dashboard/*').forRoutes('*');
-  }
-}
+export class AppModule { }
 
-// console.log(process.env);
+console.log(process.env);
