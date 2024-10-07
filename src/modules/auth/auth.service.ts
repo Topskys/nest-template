@@ -68,9 +68,9 @@ export class AuthService {
   /**
    * 生成令牌
    */
-  generateToken(payload: any, key: string, ttl?: number) {
+  async generateToken(payload: any, key: string, ttl?: number) {
     const jwtToken = this.jwtService.sign(payload);
-    this.redisService.set(key, jwtToken, ttl);
+    await this.redisService.set(key, jwtToken, ttl);
     return jwtToken;
   }
 
@@ -90,6 +90,21 @@ export class AuthService {
    * 刷新令牌
    */
   async refreshToken(user: any) {
-    return '';
+    const payload={
+      id: user.id,
+      roleCodes: user.roles.map((r) => r.code),
+      username: user.username,
+    }
+    const accessToken = this.generateToken(
+      payload,
+      this.getAccessTokenKey(payload),
+      ACCESS_TOKEN_EXPIRES_IN,
+    );
+    const refreshToken = this.generateToken(
+      payload,
+      this.getRefreshTokenKey(payload),
+      REFRESH_TOKEN_EXPIRES_IN,
+    );
+    return { accessToken, refreshToken };
   }
 }
