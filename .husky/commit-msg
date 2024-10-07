@@ -1,2 +1,2 @@
 # Add commit message linting to commit-msg hook
-npx --no -- commitlint --edit "$1"
+#npx --no -- commitlint --edit "$1" # 避免与commitizen冲突
