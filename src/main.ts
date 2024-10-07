@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { Logger } from '@nestjs/common';
-import * as compression from 'compression';
+import compression from 'compression';
 import { LoggerService } from './shared/logger/logger.service';
 
 async function bootstrap() {

@@ -20,8 +20,8 @@ import { UploadModule } from './modules/upload/upload.module';
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
     // 业务模块
-    AuthModule,
     UserModule,
+    AuthModule,
     RoleModule,
     PermissionModule,
     RecordModule,

@@ -15,7 +15,7 @@ export class Permission extends Base {
   code: string;
 
   @Column({ comment: '类型' })
-  type: PermissionType;
+  type: 'MENU' | 'BUTTON' | 'API';
 
   @Column({ nullable: true, comment: '路径' })
   path?: string;

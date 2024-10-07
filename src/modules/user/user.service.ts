@@ -92,8 +92,8 @@ export class UserService {
    * @param id 编号
    * @returns user
    */
-  findOne(id: string) {
-    return this.userRep.findOne({
+  async findOne(id: string) {
+    return await this.userRep.findOne({
       where: { id },
       relations: {
         roles: true,
@@ -168,8 +168,8 @@ export class UserService {
    * @param username 用户名
    * @returns {"id", "username", "password", "enable"}
    */
-  findByUsername(username: string) {
-    return this.userRep.findOne({
+  async findByUsername(username: string) {
+    return await this.userRep.findOne({
       where: { username },
       select: ['id', 'username', 'password', 'enable'],
       relations: {
@@ -184,8 +184,8 @@ export class UserService {
    * @param userId 用户id
    * @returns user
    */
-  findUserProfile(userId: string) {
-    return this.userRep.findOne({
+  async findUserProfile(userId: string) {
+    return await this.userRep.findOne({
       where: { id: userId },
       relations: {
         profile: true,

@@ -12,7 +12,7 @@ import { Base } from '@/modules/base.entity';
 import { hashSync } from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 
-@Entity({ comment: '用户表' })
+@Entity({ name: 'user', comment: '用户表' })
 export class User extends Base {
   @Column({ unique: true, length: 50, comment: '用户名' })
   username: string;
