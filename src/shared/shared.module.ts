@@ -53,6 +53,10 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
         {
           serveRoot: configService.get('STATIC_PREFIX'),
           rootPath: path.join(process.cwd(), configService.get('STATIC_PATH')),
+          serveStaticOptions: {
+            index: false,
+            fallthrough: false,
+          },
         },
       ],
     }),

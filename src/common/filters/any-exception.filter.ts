@@ -25,8 +25,7 @@ export class AnyExceptionFilter<T> implements ExceptionFilter {
     logger('error').error(exception);
 
     response.status(status).json({
-      code: exception.code ?? status, // 如果 exception.code 是 null 或 undefined，则将返回 status的值，否则返回exception.code的值。
-      error: exception.name,
+      statusCode: status,
       message:
         exceptRes?.message || exception.message || 'Internal Server Error',
       originUrl: `${request.method} ${request.originalUrl}`,
