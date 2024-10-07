@@ -35,6 +35,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.1",
     "@nestjs/serve-static": "^4.0.2",
+    "@nestjs/swagger": "^7.4.2",
     "@nestjs/throttler": "^5.1.2",
     "@nestjs/typeorm": "^10.0.2",
     "bcryptjs": "^2.4.3",
