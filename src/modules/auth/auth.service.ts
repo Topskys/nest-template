@@ -90,11 +90,11 @@ export class AuthService {
    * 刷新令牌
    */
   async refreshToken(user: any) {
-    const payload={
+    const payload = {
       id: user.id,
       roleCodes: user.roles.map((r) => r.code),
       username: user.username,
-    }
+    };
     const accessToken = this.generateToken(
       payload,
       this.getAccessTokenKey(payload),

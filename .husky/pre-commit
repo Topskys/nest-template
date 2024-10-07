@@ -1,0 +1,2 @@
+# 对暂存区的文件执行代码检查（eslint、prettier）
+npx lint-staged

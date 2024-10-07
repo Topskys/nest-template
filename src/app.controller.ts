@@ -8,7 +8,7 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly cache: Cache,
-  ) { }
+  ) {}
 
   @Get()
   getHello() {
@@ -17,11 +17,12 @@ export class AppController {
 
   @Sse('sse')
   sse(): Observable<MessageEvent> {
-    return interval(1000).pipe(map((_) => {
-      return new MessageEvent('ping', {
-        data: { hello: 'sse' }
-      })
-    }));
+    return interval(1000).pipe(
+      map((_) => {
+        return new MessageEvent('ping', {
+          data: { hello: 'sse' },
+        });
+      }),
+    );
   }
-
 }
