@@ -9,6 +9,7 @@ import { swagger } from './utils/swagger'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await swagger(app)
+  app.enableCors();
   app.use(helmet());
   app.use(compression()); // gzip
   app.useLogger(app.get(LoggerService));

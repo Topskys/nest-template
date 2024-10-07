@@ -68,9 +68,11 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
     }),
     // 操作记录模块
     RecordModule,
-    // 全局缓存
-    // TODO：修改缓存方式
-    // FIXME：当指定store为redisStore时，会报错，暂不修改
+    /**
+     * 全局缓存
+     * TODO：修改缓存方式
+     * FIXME：当指定store为redisStore时，会报错，暂不修改
+     */
     CacheModule.register({
       isGlobal: true,
       ttl: 24 * 60 * 60 * 1000, // 1d 缓存时间，v5单位为毫秒
