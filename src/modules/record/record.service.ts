@@ -9,7 +9,7 @@ import { Cron } from '@nestjs/schedule';
 export class RecordService {
   constructor(
     @InjectRepository(Record) private recordRep: Repository<Record>,
-  ) { }
+  ) {}
 
   /**
    * 插入记录

@@ -74,7 +74,7 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
     CacheModule.register({
       isGlobal: true,
       ttl: 24 * 60 * 60 * 1000, // 1d 缓存时间，v5单位为毫秒
-    })
+    }),
   ],
   providers: [
     SharedService,
@@ -140,13 +140,8 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
       // 全局缓存拦截器
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
-    }
+    },
   ],
-  exports: [
-    SharedService,
-    RedisService,
-    LoggerService,
-    SqLoggerService
-  ],
+  exports: [SharedService, RedisService, LoggerService, SqLoggerService],
 })
-export class SharedModule { }
+export class SharedModule {}

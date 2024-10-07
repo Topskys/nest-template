@@ -6,12 +6,9 @@ import { Record } from './record.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Record]),
-    ScheduleModule.forRoot(),
-  ],
+  imports: [TypeOrmModule.forFeature([Record]), ScheduleModule.forRoot()],
   controllers: [RecordController],
   providers: [RecordService],
   exports: [RecordService],
 })
-export class RecordModule { }
+export class RecordModule {}
