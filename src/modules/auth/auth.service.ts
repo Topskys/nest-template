@@ -79,11 +79,8 @@ export class AuthService {
    */
   async logout(id: string) {
     // 删除当前用户相关信息
-    if (id) {
-      await this.redisService.del(this.getAccessTokenKey({ id }));
-      return true;
-    }
-    return false;
+    const key = this.getAccessTokenKey({ id });
+    return await this.redisService.del(key);
   }
 
   /**

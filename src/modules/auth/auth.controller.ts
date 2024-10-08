@@ -90,10 +90,8 @@ export class AuthController {
 
   @Post('logout')
   async logout(@User('id') id: string) {
-    if (await this.authService.logout(id)) {
-      return Result.ok(undefined, LOGOUT_SUCCESS);
-    }
-    return Result.error();
+    id && (await this.authService.logout(id));
+    return Result.ok(undefined, LOGOUT_SUCCESS);
   }
 
   /**
@@ -134,5 +132,11 @@ export class AuthController {
     await this.userService.resetPassword(id, password);
     await this.authService.logout(id);
     return Result.ok(undefined, EDIT_SUCCESS);
+  }
+
+  @Get('refresh-token')
+  async refreshToken(@User('id') id: string) {
+    const tokens = await this.authService.refreshToken(id);
+    return Result.ok(tokens);
   }
 }
