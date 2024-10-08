@@ -25,7 +25,7 @@ export class AnyExceptionFilter<T> implements ExceptionFilter {
     logger('error').error(exception);
 
     response.status(status).json({
-      statusCode: status,
+      code: status,
       message:
         exceptRes?.message || exception.message || 'Internal Server Error',
       originUrl: `${request.method} ${request.originalUrl}`,

@@ -1,5 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 
+/**
+ * 封装统一响应类
+ */
 export class Result<T> {
   private code: number;
   private message: string;

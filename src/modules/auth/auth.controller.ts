@@ -135,8 +135,11 @@ export class AuthController {
   }
 
   @Get('refresh-token')
-  async refreshToken(@User('id') id: string) {
-    const tokens = await this.authService.refreshToken(id);
-    return Result.ok(tokens);
+  async refreshToken(@User() user: string, @Res() res: Response) {
+    const result = await this.authService.refreshToken(user);
+    const { accessToken, refreshToken } = result;
+    res.setHeader('Authorization', accessToken);
+    res.setHeader('RefreshToken', refreshToken);
+    res.send(Result.ok(result));
   }
 }
