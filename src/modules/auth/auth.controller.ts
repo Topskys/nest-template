@@ -48,7 +48,11 @@ export class AuthController {
   @Public()
   @UseGuards(LocalGuard) // 会将当前请求的user对象挂载到request上
   @Post('login')
-  async login(@Req() req: any, @Body() loginDto: LoginDto) {
+  async login(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() loginDto: LoginDto,
+  ) {
     const { captcha } = loginDto;
     // 判断验证码
     const redisCaptcha = await this.redisService.get(
@@ -59,7 +63,10 @@ export class AuthController {
     }
     // 执行登录
     const tokens = await this.authService.login(req.user);
-    return Result.ok(tokens, LOGIN_SUCCESS);
+    const { accessToken, refreshToken } = tokens;
+    res.setHeader('Authorization', accessToken);
+    res.setHeader('RefreshToken', refreshToken);
+    res.send(Result.ok(tokens, LOGIN_SUCCESS));
   }
 
   /**
@@ -68,7 +75,7 @@ export class AuthController {
    */
   @Log('获取验证码')
   @Public()
-  @Get('captcha')
+  @Post('captcha')
   async createCaptcha(@Res() res: Response) {
     const captcha = svgCaptcha.create({
       size: 4,

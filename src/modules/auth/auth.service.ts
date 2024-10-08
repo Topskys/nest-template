@@ -52,12 +52,12 @@ export class AuthService {
     const roleCodes = user?.roles.map((r) => r.code);
     // 生成双token
     const payload = { id: user.id, roleCodes, username: user.username }; // Jwt payload
-    const accessToken = this.generateToken(
+    const accessToken = await this.generateToken(
       payload,
       this.getAccessTokenKey(payload),
       ACCESS_TOKEN_EXPIRES_IN,
     );
-    const refreshToken = this.generateToken(
+    const refreshToken = await this.generateToken(
       payload,
       this.getRefreshTokenKey(payload),
       REFRESH_TOKEN_EXPIRES_IN,
