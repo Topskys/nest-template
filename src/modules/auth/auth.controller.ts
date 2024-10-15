@@ -141,8 +141,11 @@ export class AuthController {
     return Result.ok(undefined, EDIT_SUCCESS);
   }
 
+  @Log('刷新token')
+  @Public()
   @Get('refresh-token')
   async refreshToken(@User() user: string, @Res() res: Response) {
+    console.log(JSON.stringify(user), 'refreshToken');
     const result = await this.authService.refreshToken(user);
     const { accessToken, refreshToken } = result;
     res.setHeader('Authorization', accessToken);

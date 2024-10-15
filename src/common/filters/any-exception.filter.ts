@@ -24,10 +24,13 @@ export class AnyExceptionFilter<T> implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
     logger('error').error(exception);
 
-    response.status(status).json({
+    response.status((status + '').startsWith('4') ? 200 : status).json({
       code: status,
       message:
-        exceptRes?.message || exception.message || 'Internal Server Error',
+        exceptRes?.error ??
+        exceptRes?.message ??
+        exception.message ??
+        'Internal Server Error',
       originUrl: `${request.method} ${request.originalUrl}`,
       timeStamp: new Date().toISOString(),
     });

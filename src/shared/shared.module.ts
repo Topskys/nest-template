@@ -132,11 +132,11 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
         },
       }),
     },
-    // {
-    //   // 全局JWT守卫
-    //   provide: APP_GUARD,
-    //   useClass: JwtGuard,
-    // },
+    {
+      // 全局JWT守卫
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    },
     {
       // 全局节流
       provide: APP_GUARD,

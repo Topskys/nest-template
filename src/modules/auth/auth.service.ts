@@ -13,6 +13,7 @@ import {
   REFRESH_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_KEY,
 } from '@/constants/redis.constant';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private jwtService: JwtService,
     private redisService: RedisService,
     private userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(username: string, password: string) {
@@ -69,7 +71,10 @@ export class AuthService {
    * 生成令牌
    */
   async generateToken(payload: any, key: string, ttl?: number) {
-    const jwtToken = this.jwtService.sign(payload);
+    const jwtToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: ttl,
+    });
     await this.redisService.set(key, jwtToken, ttl);
     return jwtToken;
   }

@@ -1,4 +1,4 @@
-import { ProfileDto } from './../user/dto/create-user.dto';
+import { ProfileDto } from '../user/dto/create-user.dto';
 import { RedisService } from '@/shared/redis/redis.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -33,6 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req, payload: any) {
     const { id, username, roleCodes } = payload; // jwt payload
     const accessTokenKey = this.authService.getAccessTokenKey({ id });
+    const refreshTokenKey = this.authService.getRefreshTokenKey({ id });
     // 检查用户名是否可用
     const user = await this.userService.findByUsername(username);
     if (!user) throw new CustomException(ErrorCode.ERR_11002);
@@ -45,10 +46,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // 分别从请求头和Redis取出令牌
     const authorization = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     const redisAuthorization = await this.redisService.get(accessTokenKey);
-
+    const redisRefreshToken = await this.redisService.get(refreshTokenKey);
     // 如果Redis中没有访问令牌，则表示该用户未登录，返回错误信息
-    if (authorization !== redisAuthorization) {
-      this.redisService.del(accessTokenKey);
+    if (![redisAuthorization, redisRefreshToken].includes(authorization)) {
+      await this.redisService.del(accessTokenKey);
+      await this.redisService.del(refreshTokenKey);
       throw new HttpException(ErrorCode.ERR_11002, HttpStatus.UNAUTHORIZED);
     }
 
