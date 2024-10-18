@@ -9,11 +9,8 @@ import { SharedService } from './shared.service';
 import { AnyExceptionFilter } from '@/common/filters';
 import { ConfigService } from '@nestjs/config';
 import { createClient } from 'redis';
-import * as path from 'path';
-import { isDev } from '@/utils';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtGuard } from '@/common/guards';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { LoggerService } from './logger/logger.service';
@@ -34,20 +31,6 @@ import { getDatabaseConfig } from '@/config';
         return getDatabaseConfig(configService);
       },
     }),
-    // 静态文件服务模块
-    // ServeStaticModule.forRootAsync({
-    //   inject: [ConfigService],
-    //   useFactory: (configService: ConfigService) => [
-    //     {
-    //       serveRoot: configService.get('STATIC_PREFIX'),
-    //       rootPath: path.join(process.cwd(), configService.get('STATIC_PATH')),
-    //       serveStaticOptions: {
-    //         index: false,
-    //         fallthrough: false,
-    //       },
-    //     },
-    //   ],
-    // }),
     // 限速节流
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
