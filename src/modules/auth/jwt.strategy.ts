@@ -1,16 +1,19 @@
 import { ProfileDto } from '../user/dto/create-user.dto';
 import { RedisService } from '@/shared/redis/redis.service';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from '../user/user.service';
 import { RoleService } from '../role/role.service';
 import { AuthService } from './auth.service';
-import {
-  CustomException,
-  ErrorCode,
-} from '@/common/exceptions/custom.exception';
 import { ProfileVo } from '@/vo/profile.vo';
 
 @Injectable()
@@ -36,12 +39,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const refreshTokenKey = this.authService.getRefreshTokenKey({ id });
     // 检查用户名是否可用
     const user = await this.userService.findByUsername(username);
-    if (!user) throw new CustomException(ErrorCode.ERR_11002);
-    if (!user?.enable) throw new CustomException(ErrorCode.ERR_11007);
+    if (!user) throw new BadRequestException('用户不存在');
+    if (!user?.enable) throw new BadRequestException('用户已被禁用');
 
     // 检查用户有是否可用的角色
     if (!user.roles?.some((item) => item.enable))
-      throw new CustomException(ErrorCode.ERR_11003);
+      throw new ForbiddenException('请先分配角色');
 
     // 分别从请求头和Redis取出令牌
     const authorization = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
@@ -51,7 +54,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (![redisAuthorization, redisRefreshToken].includes(authorization)) {
       await this.redisService.del(accessTokenKey);
       await this.redisService.del(refreshTokenKey);
-      throw new HttpException(ErrorCode.ERR_11002, HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException();
     }
 
     // 延长令牌的有效期（也可以使用双token或通过过期时间刷新方案）

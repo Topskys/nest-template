@@ -1,14 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindManyOptions, In, Like, Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import {
-  CustomException,
-  ErrorCode,
-} from '@/common/exceptions/custom.exception';
 import { Role } from '../role/entities/role.entity';
 import { hashSync } from 'bcryptjs';
 import { PageUserDto, UpdateProfileDto } from './dto/user.dto';
@@ -30,7 +26,7 @@ export class UserService {
     const { username, roleIds = [] } = createUserDto;
     // 根据用户名检查用户是否已存在
     if (await this.findByUsername(username)) {
-      throw new CustomException(ErrorCode.ERR_10001);
+      throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST);
     }
     // 插入用户信息
     const newUser = this.userRep.create(createUserDto); // 等同于new User()后执行@BeforeInsert标记的方法

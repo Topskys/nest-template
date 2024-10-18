@@ -1,4 +1,4 @@
-export { JwtGuard } from './jwt.guard';
-export { LocalGuard } from './local.guard';
-export { PermissionGuard } from './permission.guard';
-export { RoleGuard } from './role.guard';
+export * from './jwt.guard';
+export * from './local.guard';
+export * from './permission.guard';
+export * from './role.guard';

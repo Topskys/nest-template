@@ -1,11 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcryptjs';
 import { UserService } from '../user/user.service';
-import {
-  CustomException,
-  ErrorCode,
-} from '@/common/exceptions/custom.exception';
 import { RedisService } from '@/shared/redis/redis.service';
 import {
   ACCESS_TOKEN_EXPIRES_IN,
@@ -46,10 +42,10 @@ export class AuthService {
    */
   async login(user: any) {
     // 判断用户角色enable属性是否有为true
-    if (!user.enable) throw new CustomException(ErrorCode.ERR_10005);
+    if (!user.enable) throw new BadRequestException('用户已被禁用');
     // 判断用户的各种状态
     if (!user.roles?.some((r) => r.enable)) {
-      throw new CustomException(ErrorCode.ERR_11003);
+      throw new BadRequestException('用户无角色');
     }
     const roleCodes = user?.roles.map((r) => r.code);
     // 生成双token

@@ -1,15 +1,11 @@
 import { Controller, Get, Sse } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Cache } from '@nestjs/cache-manager';
 import { interval, map, Observable } from 'rxjs';
 import { Log } from './common/decorators';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly cache: Cache,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get('/test')
   getHello() {
@@ -17,7 +13,7 @@ export class AppController {
   }
 
   @Log('SSE')
-  @Sse('sse1')
+  @Sse('sse')
   sse(): Observable<MessageEvent> {
     return interval(1000).pipe(
       map((_) => {

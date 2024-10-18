@@ -8,30 +8,30 @@ import {
 import logger from '@/utils/log4js';
 
 /**
- * 全局异常过滤器
+ * 异常过滤器，捕获所有异常，统一响应
  */
 @Catch()
-export class AnyExceptionFilter<T> implements ExceptionFilter {
+export class AnyExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const request = ctx.getRequest();
-    const exceptRes = exception.getResponse?.();
+    const exceptionResponse = exception.getResponse?.();
 
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
+
     logger('error').error(exception);
 
-    response.status((status + '').startsWith('4') ? 200 : status).json({
+    // 异常消息
+    const message = exception?.message
+      ? exception.message
+      : 'Internal Server Error';
+
+    response.status(status).json({
       code: status,
-      message:
-        exceptRes?.error ??
-        exceptRes?.message ??
-        exception.message ??
-        'Internal Server Error',
-      originUrl: `${request.method} ${request.originalUrl}`,
+      message,
       timeStamp: new Date().toISOString(),
     });
   }

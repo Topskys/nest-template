@@ -1,7 +1,11 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { CustomException, ErrorCode } from '../exceptions/custom.exception';
 import { DecoratorEnum } from '@/constants/decorator.constant';
 
 @Injectable()
@@ -18,11 +22,10 @@ export class RoleGuard implements CanActivate {
       DecoratorEnum.ROLES,
       context.getHandler(),
     );
-    if (!currentUserRoles?.length)
-      throw new CustomException(ErrorCode.ERR_11003);
+    if (!currentUserRoles?.length) throw new ForbiddenException('暂无权限');
     if (!roles?.length) return true;
     if (!roles.some((role) => currentUserRoles.includes(role)))
-      throw new CustomException(ErrorCode.ERR_11003);
+      throw new ForbiddenException('暂无权限');
     return true;
   }
 }

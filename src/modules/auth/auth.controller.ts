@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -17,10 +18,6 @@ import { Result } from '@/utils/Result';
 import { EDIT_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS } from '@/constants';
 import { LocalGuard } from '@/common/guards';
 import { CAPTCHA_EXPIRES_IN, CAPTCHA_KEY } from '@/constants/redis.constant';
-import {
-  CustomException,
-  ErrorCode,
-} from '@/common/exceptions/custom.exception';
 import { RedisService } from '@/shared/redis/redis.service';
 import { UpdatePasswordDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
@@ -59,7 +56,7 @@ export class AuthController {
       this.getCaptchaKey(captcha),
     );
     if (redisCaptcha !== captcha?.toLowerCase()) {
-      throw new CustomException(ErrorCode.ERR_10003);
+      throw new BadRequestException('验证码错误');
     }
     // 执行登录
     const tokens = await this.authService.login(req.user);
