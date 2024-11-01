@@ -19,6 +19,8 @@ import { LoggerInterceptor } from '@/common/interceptors/logger.interceptor';
 import { RecordModule } from '@/modules/record/record.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { getDatabaseConfig } from '@/config';
+import { LoggerModule } from 'nestjs-pino';
+import * as path from 'path';
 
 /**
  * 公共模块
@@ -51,6 +53,30 @@ import { getDatabaseConfig } from '@/config';
     CacheModule.register({
       isGlobal: true,
       ttl: 24 * 60 * 60 * 1000, // 1d 缓存时间，v5单位为毫秒
+    }),
+    // Pino日志模块，懒人专用
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport:
+          process.env.NODE_ENV === 'development'
+            ? {
+                level: 'info',
+                target: 'pino-pretty',
+                options: {
+                  colorize: true,
+                },
+              }
+            : {
+                level: 'info',
+                target: 'pino-roll',
+                options: {
+                  file: path.join('logs', 'log.txt'),
+                  frequency: 'daily',
+                  size: '1024k',
+                  mkdir: true,
+                },
+              },
+      },
     }),
   ],
   providers: [
